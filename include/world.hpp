@@ -1,22 +1,12 @@
 #pragma once
 
 #include <block_renderer.h>
+#include <block.hpp>
 #include <cstdint>
 #include <vector>
 #include <string>
 #include <iostream>
 
-enum class BlockID : std::uint8_t {
-	NONE  = 0,
-	GRASS = 1,
-	DIRT  = 2,
-	STONE = 3,
-};
-
-struct BlockCoords
-{
-	int x, y, z;
-};
 
 class World
 {
@@ -57,13 +47,13 @@ public:
 			for (int y = ymin; y < ymin + ysize; ++y) {
 				for (int x = xmin; x < xmin + xsize; ++x) {
 					if ((*this)(x, y, z) == BlockID::GRASS) {
-						renderer.set_texture("grass");
+						renderer.set_texture(BlockID::GRASS);
 						renderer.draw(x, y, z);
 					} else if ((*this)(x, y, z) == BlockID::STONE) {
-						renderer.set_texture("stone");
+						renderer.set_texture(BlockID::STONE);
 						renderer.draw(x, y, z);
 					} else if ((*this)(x, y, z) == BlockID::DIRT) {
-						renderer.set_texture("dirt");
+						renderer.set_texture(BlockID::DIRT);
 						renderer.draw(x, y, z);
 					}
 				}

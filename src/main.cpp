@@ -36,13 +36,16 @@ int main()
 	 Shader myShader("shaders/shader.vs", "shaders/shader.fs");
 
 	 BlockRenderer block_renderer(myShader);
-	 block_renderer.init_texture("grass", "assets/grass.png");
-	 block_renderer.init_texture("stone", "assets/stone.png");
-	 block_renderer.init_texture("dirt", "assets/dirt.png");
+	 block_renderer.init_texture(BlockID::GRASS, "assets/grass.png");
+	 block_renderer.init_texture(BlockID::STONE, "assets/stone.png");
+	 block_renderer.init_texture(BlockID::DIRT, "assets/dirt.png");
 
 	 World world(-20, 20, -5, 5, -20, 20);
+
 	 world.fill(BlockID::GRASS, -5, 5, 0, 0, -5, 5);
+
 	 world.place(BlockID::STONE, 1, 1, 1);
+	 world.place(BlockID::DIRT, 2, 1, 1);
 
 	 myShader.use();
 	 

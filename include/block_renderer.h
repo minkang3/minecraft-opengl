@@ -6,6 +6,7 @@
 
 #include <stb_image.h>
 
+#include <block.hpp>
 #include <shader.h>
 
 inline float cube_verticies[] = {
@@ -65,7 +66,7 @@ private:
 	Shader &shader;
 	glm::mat4 model;
 
-	std::unordered_map<std::string, unsigned int> texture_map;
+	std::unordered_map<BlockID, unsigned int> texture_map;
 public:
 	BlockRenderer(Shader &shader)
 		: shader(shader)
@@ -84,7 +85,7 @@ public:
 		glEnableVertexAttribArray(1);
 	}
 
-	void init_texture(std::string key, std::string file_path)
+	void init_texture(BlockID block_id, std::string file_path)
 	{
 		unsigned int texture;
 		// texture
@@ -111,22 +112,17 @@ public:
 		}
 		stbi_image_free(data);
 
-		std::cout << "Setting " << key << " to " << texture << std::endl;
-		texture_map[key] = texture;
+		texture_map[block_id] = texture;
 
 		shader.setInt("texture1", texture);
 	}
 
-	bool set_texture(std::string key)
+	bool set_texture(BlockID block_id)
 	{
-		if (texture_map.find(key) == texture_map.end())
+		if (texture_map.find(block_id) == texture_map.end())
 			return false;
 
-		//std::cout << "texture_map[" << key << "]: " << texture_map[key] << std::endl;
-
-		//shader.setInt("texture1", texture_map[key]);
-		glBindTexture(GL_TEXTURE_2D, texture_map[key]);
-		
+		glBindTexture(GL_TEXTURE_2D, texture_map[block_id]);
 		return true;
 	}
 
