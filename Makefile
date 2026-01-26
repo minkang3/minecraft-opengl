@@ -1,2 +1,2 @@
 all:
-	g++ -o main src/* -lglfw -I./include
+	g++ -o ./build/MC src/* -lglfw -I./include
