@@ -41,8 +41,8 @@ int main()
 	 block_renderer.init_texture("dirt", "assets/dirt.png");
 
 	 World world(-20, 20, -5, 5, -20, 20);
-	 world.fill(Block::GRASS, -5, 5, 0, 0, -5, 5);
-	 world.place(Block::STONE, 1, 1, 1);
+	 world.fill(BlockID::GRASS, -5, 5, 0, 0, -5, 5);
+	 world.place(BlockID::STONE, 1, 1, 1);
 
 	 myShader.use();
 	 

@@ -228,7 +228,7 @@ public:
 	// 	int y = std::round(cameraPos.y);
 	// 	int z = std::round(cameraPos.z);
 
-	// 	for (const Block &b : world.blocks) {
+	// 	for (const BlockID &b : world.blocks) {
 	// 		if (x == b.x && z == b.z && cameraPos.y <= (float)(b.y + 2) && cameraPos.y >= (float)(b.y + 1.9)) {
 	// 			fallSpeed = 0.0f;
 	// 			return true;
@@ -250,13 +250,13 @@ public:
 		for (int bz = pz - 1; bz <= pz + 1; ++bz) {
 			for (int by = py - 3; by <= py + 1; ++by) { // TODO: make 3 dependent on player height
 				for (int bx = px - 1; bx <= px + 1; ++bx) {
-					if (world(bx, by, bz) == Block::NONE)
+					if (world(bx, by, bz) == BlockID::NONE)
 						continue;
 					AABB block_box  = make_block_aabb(bx, by, bz);
 					if (is_colliding(player_box, block_box)) {
 						glm::vec3 collision_norm = get_collision_normal(player_box, block_box);
 						BlockCoords coords = { bx, by, bz };
-						//std::pair<glm::vec3, Block> norm_and_coords = { collision_norm, {bx, by, bz} };
+						//std::pair<glm::vec3, BlockID> norm_and_coords = { collision_norm, {bx, by, bz} };
 						res.emplace_back(collision_norm, coords);
 					}
 				}
