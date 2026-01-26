@@ -48,7 +48,7 @@ public:
 	Camera()
 	{
 		view = glm::mat4(1.0f);
-		cameraPos = glm::vec3(5.0f, 5.0f, 5.0f);
+		cameraPos = glm::vec3(0.0f, 5.0f, 0.0f);
 		cameraDir = glm::vec3(0.0f, 0.0f, -1.0f);
 		cameraUp  = glm::vec3(0.0f, 1.0f, 0.0f);
 		view = glm::lookAt(cameraPos, cameraDir, cameraUp);
@@ -94,51 +94,25 @@ public:
 		moveVector.x = moveVector.x * speed;
 		moveVector.z = moveVector.z * speed;
 
-		cameraPos += moveVector * deltaTime;
+		// cameraPos += moveVector * deltaTime;
 
-		std::cout << "precalc:\n";
-		std::cout << "x: " << cameraPos.x << "\n";
-		std::cout << "y: " << cameraPos.y << "\n";
-		std::cout << "z: " << cameraPos.z << std::endl;
+		// std::cout << "precalc:\n";
+		// std::cout << "x: " << cameraPos.x << "\n";
+		// std::cout << "y: " << cameraPos.y << "\n";
+		// std::cout << "z: " << cameraPos.z << std::endl;
 
-		std::vector<std::pair<glm::vec3, Block>> norms_and_blocks = get_all_collision_norms(world);
 
-		if (norms_and_blocks.size() > 0) {
-			std::cout << "collision detected" << std::endl;
-			std::cout << "size: " << norms_and_blocks.size() << std::endl;
-		}
-
-		// if (cameraPos.y + playerHeightOffset - playerHeight < 0.5f) {
-		// 	std::cout << "less than 0.5f: " << cameraPos.y + playerHeightOffset - playerHeight << std::endl;
+		// if (norms_and_blocks.size() > 0) {
+		// 	std::cout << "collision detected" << std::endl;
+		// 	std::cout << "size: " << norms_and_blocks.size() << std::endl;
 		// }
 
-		fallSpeed += deltaTime * fallAccel;
+		fallSpeed += deltaTime * fallAccel; // TODO: move this somewhere nicer
+
+		cameraPos.y += moveVector.y * deltaTime;
+		std::vector<std::pair<glm::vec3, BlockCoords>> norms_and_blocks = get_all_collision_norms(world);
 
 		for (const auto &[norm, block] : norms_and_blocks) {
-			//std::cout << "norm: " << glm::to_string(norm) << std::endl;
-
-			// block is -x and moving -x
-			if (norm.x < -0.01f && moveVector.x < -0.01f) {
-				//moveVector.x = 0.0f;
-				cameraPos.x = (float)block.x + (BLOCK_WIDTH / 2.0f + playerWidth / 2.0f);
-			}
-			// block is +x and moving +x
-			else if (norm.x > 0.01f && moveVector.x > 0.01f) {
-				//moveVector.x = -0.0f;
-				cameraPos.x = (float)block.x - (BLOCK_WIDTH / 2.0f + playerWidth / 2.0f);
-			}
-
-			// block is -z and moving -z
-			if (norm.z < -0.01f && moveVector.z < -0.01f) {
-				//moveVector.z = 0;
-				cameraPos.z = (float)block.z + (BLOCK_WIDTH / 2.0f + playerWidth / 2.0f);
-			}
-			// block is +z and moving +z
-			else if (norm.z > 0.01f && moveVector.z > 0.01f) {
-				//moveVector.z = 0;
-				cameraPos.z = (float)block.z - (BLOCK_WIDTH / 2.0f + playerWidth / 2.0f);
-			}
-
 			// block is +y and moving +y
 			if (norm.y > 0.01f && moveVector.y > 0.01f) {
 				//moveVector.y = -0.0f;
@@ -155,11 +129,43 @@ public:
 				}
 			}
 		}
+
+		cameraPos.x += moveVector.x * deltaTime;
+		norms_and_blocks = get_all_collision_norms(world);
+
+		for (const auto &[norm, block] : norms_and_blocks) {
+			// block is -x and moving -x
+			if (norm.x < -0.01f && moveVector.x < -0.01f) {
+				//moveVector.x = 0.0f;
+				cameraPos.x = (float)block.x + (BLOCK_WIDTH / 2.0f + playerWidth / 2.0f);
+			}
+			// block is +x and moving +x
+			else if (norm.x > 0.01f && moveVector.x > 0.01f) {
+				//moveVector.x = -0.0f;
+				cameraPos.x = (float)block.x - (BLOCK_WIDTH / 2.0f + playerWidth / 2.0f);
+			}
+		}
+
+		cameraPos.z += moveVector.z * deltaTime;
+		norms_and_blocks = get_all_collision_norms(world);
+
+		for (const auto &[norm, block] : norms_and_blocks) {
+			// block is -z and moving -z
+			if (norm.z < -0.01f && moveVector.z < -0.01f) {
+				//moveVector.z = 0;
+				cameraPos.z = (float)block.z + (BLOCK_WIDTH / 2.0f + playerWidth / 2.0f);
+			}
+			// block is +z and moving +z
+			else if (norm.z > 0.01f && moveVector.z > 0.01f) {
+				//moveVector.z = 0;
+				cameraPos.z = (float)block.z - (BLOCK_WIDTH / 2.0f + playerWidth / 2.0f);
+			}
+		}
 		should_jump = false;
-		std::cout << "postcalc:\n";
-		std::cout << "x: " << cameraPos.x << "\n";
-		std::cout << "y: " << cameraPos.y << "\n";
-		std::cout << "z: " << cameraPos.z << std::endl;
+		// std::cout << "postcalc:\n";
+		// std::cout << "x: " << cameraPos.x << "\n";
+		// std::cout << "y: " << cameraPos.y << "\n";
+		// std::cout << "z: " << cameraPos.z << std::endl;
 	}
 
 	void move_horz(CameraDir dir, float deltaTime)
@@ -213,36 +219,50 @@ public:
 			pitch = -89.0f;
 	}
 
-	bool is_above_block(World &world)
+	// bool is_above_block(World &world)
+	// {
+	// 	if (fallSpeed < 0)
+	// 		return false;
+
+	// 	int x = std::round(cameraPos.x);
+	// 	int y = std::round(cameraPos.y);
+	// 	int z = std::round(cameraPos.z);
+
+	// 	for (const Block &b : world.blocks) {
+	// 		if (x == b.x && z == b.z && cameraPos.y <= (float)(b.y + 2) && cameraPos.y >= (float)(b.y + 1.9)) {
+	// 			fallSpeed = 0.0f;
+	// 			return true;
+	// 		}
+	// 	}
+	// 	return false;
+	// }
+
+	// TODO: change name to something more fitting "check_around_player" "get_collision_norms_around_player"
+	std::vector<std::pair<glm::vec3, BlockCoords>> get_all_collision_norms(World &world)
 	{
-		if (fallSpeed < 0)
-			return false;
-
-		int x = std::round(cameraPos.x);
-		int y = std::round(cameraPos.y);
-		int z = std::round(cameraPos.z);
-
-		for (const Block &b : world.blocks) {
-			if (x == b.x && z == b.z && cameraPos.y <= (float)(b.y + 2) && cameraPos.y >= (float)(b.y + 1.9)) {
-				fallSpeed = 0.0f;
-				return true;
+		int px = std::round(cameraPos.x);
+		int py = std::round(cameraPos.y);
+		int pz = std::round(cameraPos.z);
+		
+		std::vector<std::pair<glm::vec3, BlockCoords>> res;
+		AABB player_box = make_player_aabb(cameraPos, playerWidth, playerHeight, playerHeightOffset);
+		// loop over three by three area around player
+		for (int bz = pz - 1; bz <= pz + 1; ++bz) {
+			for (int by = py - 3; by <= py + 1; ++by) { // TODO: make 3 dependent on player height
+				for (int bx = px - 1; bx <= px + 1; ++bx) {
+					if (world(bx, by, bz) == Block::NONE)
+						continue;
+					AABB block_box  = make_block_aabb(bx, by, bz);
+					if (is_colliding(player_box, block_box)) {
+						glm::vec3 collision_norm = get_collision_normal(player_box, block_box);
+						BlockCoords coords = { bx, by, bz };
+						//std::pair<glm::vec3, Block> norm_and_coords = { collision_norm, {bx, by, bz} };
+						res.emplace_back(collision_norm, coords);
+					}
+				}
 			}
 		}
-		return false;
-	}
 
-	std::vector<std::pair<glm::vec3, Block>> get_all_collision_norms(World &world)
-	{
-		std::vector<std::pair<glm::vec3, Block>> res;
-		for (const Block &block : world.blocks) {
-			AABB player_box = make_player_aabb(cameraPos, playerWidth, playerHeight, playerHeightOffset);
-			AABB block_box  = make_block_aabb(block);
-			if (is_colliding(player_box, block_box)) {
-				glm::vec3 collision_norm = get_collision_normal(player_box, block_box);
-				std::pair<glm::vec3, Block> norm_and_block = { collision_norm, block };
-				res.push_back(norm_and_block);
-			}
-		}
 		return res;
 	}
 };

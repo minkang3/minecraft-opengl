@@ -23,7 +23,6 @@ void mouse_cb(GLFWwindow *window, double x, double y);
 void processInput(GLFWwindow *window);
 
 Camera camera;
-World world;
 
 float lastTime;
 float deltaTime;
@@ -37,10 +36,13 @@ int main()
 	 Shader myShader("shaders/shader.vs", "shaders/shader.fs");
 
 	 BlockRenderer block_renderer(myShader);
-	 block_renderer.init_texture("grass_block", "assets/grass_block_texture.jpg");
-	 //block_renderer.set_texture("grass_block");
+	 block_renderer.init_texture("grass", "assets/grass.png");
+	 block_renderer.init_texture("stone", "assets/stone.png");
+	 block_renderer.init_texture("dirt", "assets/dirt.png");
 
-	 //Block my_block(3, 1, 3, "grass_block");
+	 World world(-20, 20, -5, 5, -20, 20);
+	 world.fill(Block::GRASS, -5, 5, 0, 0, -5, 5);
+	 world.place(Block::STONE, 1, 1, 1);
 
 	 myShader.use();
 	 

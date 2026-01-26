@@ -17,17 +17,17 @@ AABB make_player_aabb(const glm::vec3 &camPos, float width, float height, float 
 	return { min, max };
 }
 
-AABB make_block_aabb(const Block &block)
+AABB make_block_aabb(int x, int y, int z)
 {
 	glm::vec3 min, max;
 
-	min.x = block.x - BLOCK_WIDTH / 2.0f;
-	min.y = block.y - BLOCK_WIDTH / 2.0f;
-	min.z = block.z - BLOCK_WIDTH / 2.0f;
+	min.x = x - BLOCK_WIDTH / 2.0f;
+	min.y = y - BLOCK_WIDTH / 2.0f;
+	min.z = z - BLOCK_WIDTH / 2.0f;
 
-	max.x = block.x + BLOCK_WIDTH / 2.0f;
-	max.y = block.y + BLOCK_WIDTH / 2.0f;
-	max.z = block.z + BLOCK_WIDTH / 2.0f;
+	max.x = x + BLOCK_WIDTH / 2.0f;
+	max.y = y + BLOCK_WIDTH / 2.0f;
+	max.z = z + BLOCK_WIDTH / 2.0f;
 
 	return { min, max };
 }

@@ -12,6 +12,6 @@ struct AABB
 };
 
 AABB make_player_aabb(const glm::vec3 &camPos, float width, float height, float height_offset);
-AABB make_block_aabb(const Block &block);
+AABB make_block_aabb(int x, int y, int z);
 bool is_colliding(const AABB &a, const AABB &b);
 glm::vec3 get_collision_normal(const AABB &a, const AABB &b);
