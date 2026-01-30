@@ -38,7 +38,7 @@ int main()
 {
 	 EngineState state = { 0 };
 	 Window::init(state);
-	 ShaderNS::init(state, "shaders/shader.vs", "shaders/shader.fs");
+	 Shader::init(state, "shaders/shader.vs", "shaders/shader.fs");
 
 	 BlockRenderer block_renderer(state.shaderID);
 	 block_renderer.init_texture(BlockID::GRASS, "assets/grass.png");
@@ -57,12 +57,12 @@ int main()
 
 	 world.place(BlockID::STONE, -5, 1, 0);
 
-	 ShaderNS::use(state.shaderID);
+	 Shader::use(state.shaderID);
 	 
 	 glm::mat4 projection = glm::mat4(1.0f);
 	 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-	 ShaderNS::setMat4(state.shaderID, "projection", projection);
+	 Shader::setMat4(state.shaderID, "projection", projection);
 
 	 while (!glfwWindowShouldClose(state.window)) {
 		  deltaTime = (float)glfwGetTime() - lastTime;
@@ -78,7 +78,7 @@ int main()
 		  camera.fall(world, deltaTime);
 		  camera.move(deltaTime, world);
 		  camera.update();
-		  ShaderNS::setMat4(state.shaderID, "view", camera.get_view());
+		  Shader::setMat4(state.shaderID, "view", camera.get_view());
 
 		  glfwSwapBuffers(state.window);
 		  glfwPollEvents();

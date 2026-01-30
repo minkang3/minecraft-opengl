@@ -5,7 +5,7 @@
 #include <sstream>
 #include <iostream>
 
-namespace ShaderNS
+namespace Shader
 {
     int init(EngineState &state, const char *vertexPath, const char *fragmentPath)
 	{

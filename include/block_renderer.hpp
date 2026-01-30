@@ -66,7 +66,7 @@ public:
 
 		texture_map[block_id] = texture;
 
-		ShaderNS::setInt(shaderID, "texture1", texture);
+		Shader::setInt(shaderID, "texture1", texture);
 	}
 
 	bool set_texture(BlockID block_id)
@@ -80,11 +80,11 @@ public:
 
 	void draw(int posX, int posY, int posZ)
 	{
-		ShaderNS::use(shaderID);
+		Shader::use(shaderID);
 		model = glm::mat4(1.0f);
 		glm::vec3 posVec = glm::vec3((float)posX, (float)posY, (float)posZ);
 		model = glm::translate(model, posVec);
-		ShaderNS::setMat4(shaderID, "model", model);
+		Shader::setMat4(shaderID, "model", model);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
