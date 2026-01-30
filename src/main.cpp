@@ -21,9 +21,6 @@
 #include <stb_image.h>
 
 
-float lastTime;
-float deltaTime;
-
 int main()
 {
 	 EngineState state  = { };
@@ -44,20 +41,19 @@ int main()
 	 glfwSetWindowUserPointer(window.handle, &state);
 
 	 while (!glfwWindowShouldClose(window.handle)) {
-		  deltaTime = (float)glfwGetTime() - lastTime;
-		  lastTime  = (float)glfwGetTime();
+		  Engine::update_timedata(state);
 
 		  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		  glClear(GL_COLOR_BUFFER_BIT);
 
-		  World::draw(world, render);
-
-		  Camera::reset_move(camera);
+		  //Camera::reset_move(camera);
 		  Window::processInput(window.handle, camera, world);
-		  Camera::fall(camera, deltaTime);
-		  Camera::move(camera, world, deltaTime);
+		  Camera::fall(camera, state.timestamp_delta);
+		  Camera::move(camera, world, state.timestamp_delta);
 		  Camera::update(camera);
 		  Shader::setMat4(render.shaderID, "view", camera.view);
+
+		  World::draw(world, render);
 
 		  glfwSwapBuffers(window.handle);
 		  glfwPollEvents();

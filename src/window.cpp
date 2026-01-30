@@ -1,15 +1,7 @@
 #include <window.hpp>
-
 #include <game_engine.hpp>
-
 #include <iostream>
 
-extern float lastTime;
-extern float deltaTime;
-
-extern bool firstMouse;
-extern double lastX;
-extern double lastY;
 
 namespace Window
 {
@@ -72,6 +64,7 @@ namespace Window
 	void processInput(GLFWwindow *window, CameraData &camera, WorldData &world)
 	{
 		static bool rightClickFirst = true;
+
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS ||
 			glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
@@ -85,31 +78,22 @@ namespace Window
 		}
 	 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			Camera::move_horz(camera, FORWARD, deltaTime);
+			Camera::move_horz(camera, FORWARD);
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			Camera::move_horz(camera, BACKWARD, deltaTime);
+			Camera::move_horz(camera, BACKWARD);
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			Camera::move_horz(camera, LEFT, deltaTime);
+			Camera::move_horz(camera, LEFT);
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			Camera::move_horz(camera, RIGHT, deltaTime);
+			Camera::move_horz(camera, RIGHT);
 		if (!(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) &&
 			!(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) &&
 			!(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) &&
 			!(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS))
-			Camera::move_horz(camera, NONE, deltaTime);
+			Camera::move_horz(camera, NONE);
 		 
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 			camera.shouldJump = true;
 		// if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		// 	  Camera::move_vert(camera, -1, deltaTime);
-	 
-		if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
-			camera.speed += 0.1f;
-			std::cout << "add pressed\n" << std::endl;
-		}
-		if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) {
-			camera.speed -= 0.1f;
-			std::cout << "minus pressed\n" << std::endl;
-		}
 	}
 }

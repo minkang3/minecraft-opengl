@@ -23,6 +23,36 @@ namespace Camera
 		return 0;
 	}
 
+	void move_horz(CameraData &camera, CameraDir dir)
+	{
+		glm::mat3 stripY = glm::mat3
+			(1.0f, 0.0f, 0.0f,
+			 0.0f, 0.0f, 0.0f,
+			 0.0f, 0.0f, 1.0f);
+
+		glm::vec3 moveDir = glm::normalize(stripY * camera.cameraDir);
+
+		switch (dir) {
+		case FORWARD:
+			break;
+		case BACKWARD:
+			moveDir *= -1;
+			break;
+		case LEFT:
+			moveDir = -glm::cross(moveDir, camera.cameraUp);
+			break;
+		case RIGHT:
+			moveDir =  glm::cross(moveDir, camera.cameraUp);
+			break;
+		case NONE:
+			camera.moveVector = glm::vec3(0.0f, 0.0f, 0.0f);
+			return;
+		}
+
+		camera.moveVector += moveDir;
+		camera.moveVector = glm::normalize(camera.moveVector);
+	}
+
 	void update(CameraData &camera)
 	{
 		camera.view = glm::lookAt(camera.cameraPos,
@@ -35,10 +65,10 @@ namespace Camera
 		camera.cameraDir = dir;
 	}
 
-	void reset_move(CameraData &camera)
-	{
-		camera.moveVector = glm::vec3(0.0f, 0.0f, 0.0f);
-	}
+	// void reset_move(CameraData &camera)
+	// {
+	// 	camera.moveVector = glm::vec3(0.0f, 0.0f, 0.0f);
+	// }
 
 	void move(CameraData &camera, WorldData &world, float deltaTime)
 	{
@@ -106,35 +136,7 @@ namespace Camera
 		// std::cout << "z: " << camera.cameraPos.z << std::endl;
 	}
 
-	void move_horz(CameraData &camera, CameraDir dir, float deltaTime)
-	{
-		glm::mat3 stripY = glm::mat3
-			(1.0f, 0.0f, 0.0f,
-			 0.0f, 0.0f, 0.0f,
-			 0.0f, 0.0f, 1.0f);
-
-		glm::vec3 moveDir = glm::normalize(stripY * camera.cameraDir);
-
-		switch (dir) {
-		case FORWARD:
-			break;
-		case BACKWARD:
-			moveDir *= -1;
-			break;
-		case LEFT:
-			moveDir = -glm::cross(moveDir, camera.cameraUp);
-			break;
-		case RIGHT:
-			moveDir =  glm::cross(moveDir, camera.cameraUp);
-			break;
-		case NONE:
-			camera.moveVector = glm::vec3(0.0f, 0.0f, 0.0f);
-			return;
-		}
-
-		camera.moveVector += moveDir;
-		camera.moveVector = glm::normalize(camera.moveVector);
-	}
+	
 
 	void fall(CameraData &camera, float deltaTime)
 	{

@@ -70,10 +70,10 @@ struct CameraData
 namespace Camera
 {
 	int init(CameraData &camera);
+	void move_horz(CameraData &camera, CameraDir dir);
 	void update(CameraData &camera);
 	void reset_move(CameraData &camera);
 	void move(CameraData &camera, WorldData &world, float deltaTime);
-	void move_horz(CameraData &camera, CameraDir dir, float deltaTime);
 	void fall(CameraData &camera, float deltaTime);
 	void jump(CameraData &camera);
 	void move_cam(CameraData &camera, double dx, double dy);
