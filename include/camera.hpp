@@ -78,14 +78,13 @@ public:
 	float playerHeightOffset;
 
 	bool shouldJump;
-	World *world;
+	WorldData *world;
 
 public:
 	float yaw;
 	float pitch;
 	float speed;
 	Camera()
-		: world(world)
 	{
 		view = glm::mat4(1.0f);
 		cameraPos = glm::vec3(0.0f, 5.0f, 0.0f);
@@ -104,7 +103,7 @@ public:
 		playerHeightOffset = DEFAULT_PLAYER_HEIGHT_OFFSET;
 	}
 
-	void set_world(World *world)
+	void set_world(WorldData *world)
 	{
 		this->world = world;
 	}
@@ -134,7 +133,7 @@ public:
 		moveVector = glm::vec3(0.0f, 0.0f, 0.0f);
 	}
 
-	void move(float deltaTime, World world)
+	void move(float deltaTime)
 	{
 		moveVector.x = moveVector.x * speed;
 		moveVector.z = moveVector.z * speed;
@@ -155,7 +154,7 @@ public:
 		fallSpeed += deltaTime * fallAccel; // TODO: move this somewhere nicer
 
 		cameraPos.y += moveVector.y * deltaTime;
-		std::vector<std::pair<glm::vec3, BlockCoords>> norms_and_blocks = get_all_collision_norms(world);
+		std::vector<std::pair<glm::vec3, BlockCoords>> norms_and_blocks = get_all_collision_norms();
 
 		for (const auto &[norm, block] : norms_and_blocks) {
 			// block is +y and moving +y
@@ -176,7 +175,7 @@ public:
 		}
 
 		cameraPos.x += moveVector.x * deltaTime;
-		norms_and_blocks = get_all_collision_norms(world);
+		norms_and_blocks = get_all_collision_norms();
 
 		for (const auto &[norm, block] : norms_and_blocks) {
 			// block is -x and moving -x
@@ -192,7 +191,7 @@ public:
 		}
 
 		cameraPos.z += moveVector.z * deltaTime;
-		norms_and_blocks = get_all_collision_norms(world);
+		norms_and_blocks = get_all_collision_norms();
 
 		for (const auto &[norm, block] : norms_and_blocks) {
 			// block is -z and moving -z
@@ -243,7 +242,7 @@ public:
 		moveVector = glm::normalize(moveVector);
 	}
 
-	void fall(World &world, float deltaTime)
+	void fall(float deltaTime)
 	{
 		moveVector.y = -fallSpeed;
 	}
@@ -283,7 +282,7 @@ public:
 	// }
 
 	// TODO: change name to something more fitting "check_around_player" "get_collision_norms_around_player"
-	std::vector<std::pair<glm::vec3, BlockCoords>> get_all_collision_norms(World &world)
+	std::vector<std::pair<glm::vec3, BlockCoords>> get_all_collision_norms()
 	{
 		int px = std::round(cameraPos.x);
 		int py = std::round(cameraPos.y);
@@ -295,7 +294,7 @@ public:
 		for (int bz = pz - 1; bz <= pz + 1; ++bz) {
 			for (int by = py - 3; by <= py + 1; ++by) { // TODO: make 3 dependent on player height
 				for (int bx = px - 1; bx <= px + 1; ++bx) {
-					if (world(bx, by, bz) == BlockID::NONE)
+					if (World::at(*world, bx, by, bz) == BlockID::NONE)
 						continue;
 					AABB block_box  = make_block_aabb(bx, by, bz);
 					if (is_colliding(player_box, block_box)) {
@@ -319,7 +318,7 @@ public:
 		for (int z = world->zmin; z < world->zmin + world->zsize; ++z) {
 			for (int y = world->ymin; y < world->ymin + world->ysize; ++y) {
 				for (int x = world->xmin; x < world->xmin + world->xsize; ++x) {
-					if ((*world)(x, y, z) == BlockID::NONE)
+					if (World::at(*world, x, y, z) == BlockID::NONE)
 						continue;
 					AABB aabb = make_block_aabb(x, y, z);
 					RayFace rayface = draw_ray_to_block(aabb);
@@ -365,7 +364,7 @@ public:
 			break;
 		}
 
-		(*world)(new_coords.x, new_coords.y, new_coords.z) = BlockID::STONE;
+		World::at(*world, new_coords.x, new_coords.y, new_coords.z) = BlockID::STONE;
 
 		std::cout << "new coords:" << std::endl;
 		std::cout << "(" << new_coords.x << ", " << new_coords.y << ", " << new_coords.z << ")" << std::endl;

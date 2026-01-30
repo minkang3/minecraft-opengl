@@ -14,16 +14,17 @@ struct WorldData
 	int xsize, ysize, zsize;
 };
 
-namespace WorldNS
+namespace World
 {
-	int init();
+	int init(WorldData &world, int xmin, int xmax, int ymin, int ymax, int zmin, int zmax);
 	BlockID& at(WorldData &world, int x, int y, int z);
 	void draw(WorldData &world, BlockRender &render);
 	void fill(WorldData &world, BlockID block_type, int xmin, int xmax, int ymin, int ymax, int zmin, int zmax);
 	void place(WorldData &world, BlockID block_type, int x, int y, int z);
 }
 
-class World
+/*
+class WorldC
 {
 private:
 	std::vector<BlockID> blocks;
@@ -98,4 +99,5 @@ public:
 		// TODO:
 	}
 };
+*/
 

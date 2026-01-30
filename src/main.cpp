@@ -35,23 +35,25 @@ double lastY;
 
 int main()
 {
-	 EngineState state  = { 0 };
-	 BlockRender render = { 0 };
+	 EngineState state  = { };
+	 BlockRender render = { };
+	 WorldData   world  = { };
 
 	 Window::init(state);
 	 Render::init(render);
+	 World::init(world, -20, 20, -5, 5, -20, 20);
 
-	 World world(-20, 20, -5, 5, -20, 20);
+	 //World world(-20, 20, -5, 5, -20, 20);
 
 	 camera.set_world(&world);
 
-	 world.fill(BlockID::GRASS, -5, 5, 0, 0, -5, 5);
+	 World::fill(world, BlockID::GRASS, -5, 5, 0, 0, -5, 5);
 
-	 world.place(BlockID::STONE, 1, 1, 1);
-	 world.place(BlockID::DIRT, 2, 1, 1);
-	 world.place(BlockID::DIRT, 0, 5, 0);
+	 World::place(world, BlockID::STONE, 1, 1, 1);
+	 World::place(world, BlockID::DIRT, 2, 1, 1);
+	 World::place(world, BlockID::DIRT, 0, 5, 0);
 
-	 world.place(BlockID::STONE, -5, 1, 0);
+	 World::place(world, BlockID::STONE, -5, 1, 0);
 
 	 Shader::use(render.shaderID);
 	 
@@ -60,6 +62,9 @@ int main()
 
 	 Shader::setMat4(render.shaderID, "projection", projection);
 
+	 std::cout << "spot 1" << std::endl;
+	 
+
 	 while (!glfwWindowShouldClose(state.window)) {
 		  deltaTime = (float)glfwGetTime() - lastTime;
 		  lastTime = (float)glfwGetTime();
@@ -67,12 +72,14 @@ int main()
 		  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		  glClear(GL_COLOR_BUFFER_BIT);
 
-		  world.draw(render);
+		  std::cout << "spot 2" << std::endl;
+		  World::draw(world, render);
+		  std::cout << "spot 3" << std::endl;
 
 		  camera.reset_move();
 		  processInput(state.window);
-		  camera.fall(world, deltaTime);
-		  camera.move(deltaTime, world);
+		  camera.fall(deltaTime);
+		  camera.move(deltaTime);
 		  camera.update();
 		  Shader::setMat4(render.shaderID, "view", camera.get_view());
 
