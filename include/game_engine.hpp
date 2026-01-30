@@ -3,9 +3,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-typedef unsigned int ShaderID;
+#include <window.hpp>
+
+
 
 struct EngineState
 {
-	GLFWwindow *window;
+
 };

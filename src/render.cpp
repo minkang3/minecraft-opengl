@@ -1,6 +1,8 @@
 #include <render.hpp>
 #include <cassert>
 
+#include <shader.hpp>
+
 namespace Render
 {
 	int init(BlockRender &render)

@@ -1,19 +1,23 @@
 #pragma once
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <stb_image.h>
 
-#include <game_engine.hpp>
-
 #include <block.hpp>
-#include <shader.hpp>
 #include "cube_verticies.hpp"
 
-typedef unsigned int textureID;
+#include <string>
+
 
 #define SHADER_ID_UNINIT 0xdeadbeef
+
+typedef unsigned int ShaderID;
+typedef unsigned int textureID;
 
 struct BlockRender
 {
