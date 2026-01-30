@@ -45,7 +45,6 @@ std::ostream& operator<<(std::ostream& os, Axis a);
 
 struct CameraData
 {
-	glm::mat4 view;
 	glm::vec3 cameraPos;
 	glm::vec3 cameraDir;
 	glm::vec3 cameraUp;

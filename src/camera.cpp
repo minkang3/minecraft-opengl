@@ -4,11 +4,9 @@ namespace Camera
 {
 	int init(CameraData &camera)
 	{
-		camera.view = glm::mat4(1.0f);
 		camera.cameraPos = glm::vec3(0.0f, 5.0f, 0.0f);
 		camera.cameraDir = glm::vec3(0.0f, 0.0f, -1.0f);
 		camera.cameraUp  = glm::vec3(0.0f, 1.0f, 0.0f);
-		camera.view = glm::lookAt(camera.cameraPos, camera.cameraDir, camera.cameraUp);
 
 		camera.speed = DEFAULT_SPEED;
 		camera.fallSpeed = 0.0f;
@@ -30,10 +28,6 @@ namespace Camera
 		dir.y = sin(glm::radians(camera.pitch));
 		dir.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
 		camera.cameraDir = dir;
-
-		camera.view = glm::lookAt(camera.cameraPos,
-								  camera.cameraPos + camera.cameraDir,
-								  camera.cameraUp);
 
 		update_pos(camera, world, deltaTime);
 	}

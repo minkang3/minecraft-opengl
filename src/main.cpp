@@ -31,6 +31,7 @@ int main()
 
 	 state.window = &window;
 	 state.camera = &camera;
+	 state.render = &render;
 
 	 Window::init(window);
 	 Shader::init(render.shaderID);
@@ -48,7 +49,7 @@ int main()
 
 		  Window::processInput(window.handle, camera, world);
 		  Camera::update(camera, world, state.timestamp_delta);
-		  Shader::setMat4(render.shaderID, "view", camera.view);
+		  Engine::update_view_matrix(state);
 
 		  World::draw(world, render);
 
