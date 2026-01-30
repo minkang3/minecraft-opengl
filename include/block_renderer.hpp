@@ -14,13 +14,14 @@ class BlockRenderer
 {
 private:
 	unsigned int VAO, VBO;
-	Shader &shader;
 	glm::mat4 model;
 	std::unordered_map<BlockID, unsigned int> texture_map;
 
+	ShaderID shaderID;
+
 public:
-	BlockRenderer(Shader &shader)
-		: shader(shader)
+	BlockRenderer(ShaderID shaderID)
+		: shaderID(shaderID)
 	{
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
@@ -65,7 +66,7 @@ public:
 
 		texture_map[block_id] = texture;
 
-		shader.setInt("texture1", texture);
+		ShaderNS::setInt(shaderID, "texture1", texture);
 	}
 
 	bool set_texture(BlockID block_id)
@@ -79,11 +80,11 @@ public:
 
 	void draw(int posX, int posY, int posZ)
 	{
-		shader.use();
+		ShaderNS::use(shaderID);
 		model = glm::mat4(1.0f);
 		glm::vec3 posVec = glm::vec3((float)posX, (float)posY, (float)posZ);
 		model = glm::translate(model, posVec);
-		shader.setMat4("model", model);
+		ShaderNS::setMat4(shaderID, "model", model);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
