@@ -47,8 +47,7 @@ int main()
 		  glClear(GL_COLOR_BUFFER_BIT);
 
 		  Window::processInput(window.handle, camera, world);
-		  Camera::move(camera, world, state.timestamp_delta);
-		  Camera::update(camera);
+		  Camera::update(camera, world, state.timestamp_delta);
 		  Shader::setMat4(render.shaderID, "view", camera.view);
 
 		  World::draw(world, render);

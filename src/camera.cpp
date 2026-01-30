@@ -23,6 +23,21 @@ namespace Camera
 		return 0;
 	}
 
+	void update(CameraData &camera, WorldData &world, float deltaTime)
+	{
+		glm::vec3 dir;
+		dir.x = cos(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
+		dir.y = sin(glm::radians(camera.pitch));
+		dir.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
+		camera.cameraDir = dir;
+
+		camera.view = glm::lookAt(camera.cameraPos,
+								  camera.cameraPos + camera.cameraDir,
+								  camera.cameraUp);
+
+		move(camera, world, deltaTime);
+	}
+
 	void queue_horz_move(CameraData &camera, CameraDir dir)
 	{
 		switch (dir) {
@@ -67,39 +82,27 @@ namespace Camera
 		return glm::length(move) > 0.01 ? glm::normalize(move) : move;
 	}
 
-	void update(CameraData &camera)
-	{
-		camera.view = glm::lookAt(camera.cameraPos,
-								  camera.cameraPos + camera.cameraDir,
-								  camera.cameraUp);
-		glm::vec3 dir;
-		dir.x = cos(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
-		dir.y = sin(glm::radians(camera.pitch));
-		dir.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
-		camera.cameraDir = dir;
-	}
-
 	void move(CameraData &camera, WorldData &world, float deltaTime)
 	{
-		camera.moveVector = calc_horz_move_vector(camera);
-		camera.moveVector.x = camera.moveVector.x * camera.speed;
-		camera.moveVector.z = camera.moveVector.z * camera.speed;
-		camera.moveVector.y = -camera.fallSpeed;
+		glm::vec3 moveVector = calc_horz_move_vector(camera);
+		moveVector.x = moveVector.x * camera.speed;
+		moveVector.z = moveVector.z * camera.speed;
+		moveVector.y = -camera.fallSpeed;
 
 		camera.fallSpeed += deltaTime * camera.fallAccel; // TODO: move this somewhere nicer
 
-		camera.cameraPos.y += camera.moveVector.y * deltaTime;
+		camera.cameraPos.y += moveVector.y * deltaTime;
 		std::vector<std::pair<glm::vec3, BlockCoords>> norms_and_blocks = get_all_collision_norms(camera, world);
 
 		for (const auto &[norm, block] : norms_and_blocks) {
 			// block is +y and moving +y
-			if (norm.y > 0.01f && camera.moveVector.y > 0.01f) {
-				//camera.moveVector.y = -0.0f;
+			if (norm.y > 0.01f && moveVector.y > 0.01f) {
+				//moveVector.y = -0.0f;
 				camera.fallSpeed = 0;
 			}
 			// block is -y and moving -y
-			else if (norm.y < -0.01f && camera.moveVector.y < -0.01f) {
-				//camera.moveVector.y = 0.0f;
+			else if (norm.y < -0.01f && moveVector.y < -0.01f) {
+				//moveVector.y = 0.0f;
 				camera.cameraPos.y = (float)block.y + (BLOCK_WIDTH / 2.0f + camera.playerHeight - camera.playerHeightOffset);
 				if (!(camera.fallSpeed < 0))
 					camera.fallSpeed = 0;
@@ -109,34 +112,34 @@ namespace Camera
 			}
 		}
 
-		camera.cameraPos.x += camera.moveVector.x * deltaTime;
+		camera.cameraPos.x += moveVector.x * deltaTime;
 		norms_and_blocks = get_all_collision_norms(camera, world);
 
 		for (const auto &[norm, block] : norms_and_blocks) {
 			// block is -x and moving -x
-			if (norm.x < -0.01f && camera.moveVector.x < -0.01f) {
-				//camera.moveVector.x = 0.0f;
+			if (norm.x < -0.01f && moveVector.x < -0.01f) {
+				//moveVector.x = 0.0f;
 				camera.cameraPos.x = (float)block.x + (BLOCK_WIDTH / 2.0f + camera.playerWidth / 2.0f);
 			}
 			// block is +x and moving +x
-			else if (norm.x > 0.01f && camera.moveVector.x > 0.01f) {
-				//camera.moveVector.x = -0.0f;
+			else if (norm.x > 0.01f && moveVector.x > 0.01f) {
+				//moveVector.x = -0.0f;
 				camera.cameraPos.x = (float)block.x - (BLOCK_WIDTH / 2.0f + camera.playerWidth / 2.0f);
 			}
 		}
 
-		camera.cameraPos.z += camera.moveVector.z * deltaTime;
+		camera.cameraPos.z += moveVector.z * deltaTime;
 		norms_and_blocks = get_all_collision_norms(camera, world);
 
 		for (const auto &[norm, block] : norms_and_blocks) {
 			// block is -z and moving -z
-			if (norm.z < -0.01f && camera.moveVector.z < -0.01f) {
-				//camera.moveVector.z = 0;
+			if (norm.z < -0.01f && moveVector.z < -0.01f) {
+				//moveVector.z = 0;
 				camera.cameraPos.z = (float)block.z + (BLOCK_WIDTH / 2.0f + camera.playerWidth / 2.0f);
 			}
 			// block is +z and moving +z
-			else if (norm.z > 0.01f && camera.moveVector.z > 0.01f) {
-				//camera.moveVector.z = 0;
+			else if (norm.z > 0.01f && moveVector.z > 0.01f) {
+				//moveVector.z = 0;
 				camera.cameraPos.z = (float)block.z - (BLOCK_WIDTH / 2.0f + camera.playerWidth / 2.0f);
 			}
 		}
@@ -154,7 +157,7 @@ namespace Camera
 
 	void move_cam(CameraData &camera, double dx, double dy)
 	{
-		camera.yaw += (float) dx * 0.01f;
+		camera.yaw += (float) dx * 0.01f; // TODO: make 0.01f a sensitivity variale
 		camera.pitch -= (float) dy * 0.01f;
 
 		if (camera.pitch > 89.0f)

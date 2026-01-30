@@ -72,8 +72,8 @@ struct CameraData
 namespace Camera
 {
 	int init(CameraData &camera);
+	void update(CameraData &camera, WorldData &world, float deltaTime);
 	void queue_horz_move(CameraData &camera, CameraDir dir);
-	void update(CameraData &camera);
 	void move(CameraData &camera, WorldData &world, float deltaTime);
 	void jump(CameraData &camera);
 	void move_cam(CameraData &camera, double dx, double dy);
