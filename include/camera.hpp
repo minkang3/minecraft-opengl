@@ -1,11 +1,11 @@
 #pragma once
 
-#include <cmath>
-
 #include <shader.hpp>
 #include <world.hpp>
 #include <collision.hpp>
+
 #include <iostream>
+#include <cmath>
 
 const float DEFAULT_SPEED = 5.0f;
 const float DEFAULT_PLAYER_WIDTH = 0.7f;
@@ -40,24 +40,46 @@ struct RayFace
 	float t;
 };
 
-std::ostream& operator<<(std::ostream& os, Face f) {
-    switch (f) {
-	case Face::INVALID:   return os << "INVALID";
-	case Face::LOW: return os << "LOW";
-	case Face::HIGH:  return os << "HIGH";
-        default:           return os << "Unknown";
-    }
-}
+std::ostream& operator<<(std::ostream& os, Face f);
+std::ostream& operator<<(std::ostream& os, Axis a);
 
-std::ostream& operator<<(std::ostream& os, Axis a) {
-    switch (a) {
-	case Axis::INVALID:   return os << "INVALID";
-	case Axis::X_AXIS: return os << "X_AXIS";
-	case Axis::Y_AXIS: return os << "Y_AXIS";
-	case Axis::Z_AXIS: return os << "Z_AXIS";
+struct CameraData
+{
+	glm::mat4 view;
+	glm::vec3 cameraPos;
+	glm::vec3 cameraDir;
+	glm::vec3 cameraUp;
 
-        default:           return os << "Unknown";
-    }
+	glm::vec3 moveVector;
+
+	float fallSpeed;
+	float fallAccel;
+
+	float playerWidth;
+	float playerHeight;
+	float playerHeightOffset;
+
+	bool shouldJump;
+	WorldData *world;
+
+	float yaw;
+	float pitch;
+	float speed;
+};
+
+namespace CameraNS
+{
+	int init(CameraData &camera);
+	void update(CameraData &camera);
+	void reset_move(CameraData &camera);
+	void move(CameraData &camera, WorldData &world, float deltaTime);
+	void move_horz(CameraData &camera, CameraDir dir, float deltaTime);
+	void fall(CameraData &camera, float deltaTime);
+	void jump(CameraData &camera);
+	void move_cam(CameraData &camera, double dx, double dy);
+	std::vector<std::pair<glm::vec3, BlockCoords>> get_all_collision_norms(CameraData &camera, WorldData &world);
+	void place_block(CameraData &camera, WorldData &world);
+	RayFace draw_ray_to_block(CameraData &camera, AABB aabb);
 }
 
 class Camera
@@ -137,19 +159,6 @@ public:
 	{
 		moveVector.x = moveVector.x * speed;
 		moveVector.z = moveVector.z * speed;
-
-		// cameraPos += moveVector * deltaTime;
-
-		// std::cout << "precalc:\n";
-		// std::cout << "x: " << cameraPos.x << "\n";
-		// std::cout << "y: " << cameraPos.y << "\n";
-		// std::cout << "z: " << cameraPos.z << std::endl;
-
-
-		// if (norms_and_blocks.size() > 0) {
-		// 	std::cout << "collision detected" << std::endl;
-		// 	std::cout << "size: " << norms_and_blocks.size() << std::endl;
-		// }
 
 		fallSpeed += deltaTime * fallAccel; // TODO: move this somewhere nicer
 
