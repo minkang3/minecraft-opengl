@@ -1,4 +1,3 @@
-#include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -8,7 +7,11 @@
 #define GLM_ENABLE_EXPERIMENTAL // to be able to print matricies/vectors to stdout
 #include <glm/gtx/string_cast.hpp>
 
-#include <shader.h>
+#include <iostream>
+
+#include <game_engine.hpp>
+#include <window_system.hpp>
+#include <shader.hpp>
 #include <block_renderer.hpp>
 #include <camera.hpp>
 #include <world.hpp>
@@ -33,7 +36,8 @@ double lastY;
 
 int main()
 {
-	 GLFWwindow *window = init();
+	 EngineState state = { 0 };
+	 WindowSystem::init(state);
 	 Shader myShader("shaders/shader.vs", "shaders/shader.fs");
 
 	 BlockRenderer block_renderer(myShader);
@@ -60,7 +64,7 @@ int main()
 
 	 myShader.setMat4("projection", projection);
 
-	 while (!glfwWindowShouldClose(window)) {
+	 while (!glfwWindowShouldClose(state.window)) {
 		  deltaTime = (float)glfwGetTime() - lastTime;
 		  lastTime = (float)glfwGetTime();
 
@@ -70,13 +74,13 @@ int main()
 		  world.draw(block_renderer);
 
 		  camera.reset_move();
-		  processInput(window);
+		  processInput(state.window);
 		  camera.fall(world, deltaTime);
 		  camera.move(deltaTime, world);
 		  camera.update();
 		  myShader.setMat4("view", camera.get_view());
 
-		  glfwSwapBuffers(window);
+		  glfwSwapBuffers(state.window);
 		  glfwPollEvents();
 	 }
 
@@ -84,39 +88,6 @@ int main()
 	 return 0;
 }
 
-GLFWwindow *init()
-{
-	  // init and set version
-	 glfwInit();
-	 glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	 glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	 glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	 glfwWindowHintString(GLFW_WAYLAND_APP_ID, "opengl_window");
-
-	 // create window
-	 GLFWwindow *window = glfwCreateWindow(800, 600, "opengl recreation", NULL, NULL);
-	 if (!window) {
-		  std::cout << "Failed to create window\n";
-		  return NULL;
-	 }
-	 glfwMakeContextCurrent(window);
-	 glfwSetFramebufferSizeCallback(window, framebuffer_size_cb);
-	 glfwSetCursorPosCallback(window, mouse_cb);
-	 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	 if (glfwRawMouseMotionSupported()) {
-		  std::cout << "setting raw mouse" << std::endl;
-		  glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-	 }
-
-	 // init glad
-	 if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		  std::cout << "Failed to initialize glad\n";
-		  return NULL;
-	 }
-	 glEnable(GL_DEPTH_TEST);
-
-	 return window;
-}
 
 void processInput(GLFWwindow *window)
 {

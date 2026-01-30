@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include <shader.h>
+#include <shader.hpp>
 #include <world.hpp>
 #include <collision.hpp>
 #include <iostream>

@@ -3,61 +3,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
 #include <stb_image.h>
 
 #include <block.hpp>
-#include <shader.h>
+#include <shader.hpp>
+#include "cube_verticies.hpp"
 
-inline float cube_verticies[] = {
-	// left face
-	-0.5f,  0.5f, -0.5f, 0.0f / 4.0f, 2.0f / 3.0f,
-	-0.5f, -0.5f, -0.5f, 0.0f / 4.0f, 1.0f / 3.0f,
-	-0.5f, -0.5f,  0.5f, 1.0f / 4.0f, 1.0f / 3.0f,
-	-0.5f, -0.5f,  0.5f, 1.0f / 4.0f, 1.0f / 3.0f,
-	-0.5f,  0.5f,  0.5f, 1.0f / 4.0f, 2.0f / 3.0f,
-	-0.5f,  0.5f, -0.5f, 0.0f / 4.0f, 2.0f / 3.0f,
-		  
-	// front face
-	-0.5f, -0.5f, 0.5f, 1.0f / 4.0f, 1.0f / 3.0f,
-	 0.5f, -0.5f, 0.5f, 2.0f / 4.0f, 1.0f / 3.0f,
-	-0.5f,  0.5f, 0.5f, 1.0f / 4.0f, 2.0f / 3.0f,
-	 0.5f, -0.5f, 0.5f, 2.0f / 4.0f, 1.0f / 3.0f,
-	-0.5f,  0.5f, 0.5f, 1.0f / 4.0f, 2.0f / 3.0f,
-	 0.5f,  0.5f, 0.5f, 2.0f / 4.0f, 2.0f / 3.0f,
-
-	// right face
-	0.5f,  0.5f, -0.5f, 3.0f / 4.0f, 2.0f / 3.0f,
-	0.5f, -0.5f, -0.5f, 3.0f / 4.0f, 1.0f / 3.0f,
-	0.5f, -0.5f,  0.5f, 2.0f / 4.0f, 1.0f / 3.0f,
-	0.5f, -0.5f,  0.5f, 2.0f / 4.0f, 1.0f / 3.0f,
-	0.5f,  0.5f,  0.5f, 2.0f / 4.0f, 2.0f / 3.0f,
-	0.5f,  0.5f, -0.5f, 3.0f / 4.0f, 2.0f / 3.0f,
-
-	// back face
-	-0.5f, -0.5f, -0.5f, 4.0f / 4.0f, 1.0f / 3.0f,
-	 0.5f, -0.5f, -0.5f, 3.0f / 4.0f, 1.0f / 3.0f,
-	-0.5f,  0.5f, -0.5f, 4.0f / 4.0f, 2.0f / 3.0f,
-	 0.5f, -0.5f, -0.5f, 3.0f / 4.0f, 1.0f / 3.0f,
-	-0.5f,  0.5f, -0.5f, 4.0f / 4.0f, 2.0f / 3.0f,
-	 0.5f,  0.5f, -0.5f, 3.0f / 4.0f, 2.0f / 3.0f,
-
-	// top face
-	-0.5f, 0.5f, -0.5f, 1.0f / 4.0f, 3.0f / 3.0f,
-	-0.5f, 0.5f,  0.5f, 1.0f / 4.0f, 2.0f / 3.0f,
-	 0.5f, 0.5f,  0.5f, 2.0f / 4.0f, 2.0f / 3.0f,
-	 0.5f, 0.5f,  0.5f, 2.0f / 4.0f, 2.0f / 3.0f,
-	 0.5f, 0.5f, -0.5f, 2.0f / 4.0f, 3.0f / 3.0f,
-	-0.5f, 0.5f, -0.5f, 1.0f / 4.0f, 3.0f / 3.0f,
-
-	// bot face
-	-0.5f, -0.5f, -0.5f, 1.0f / 4.0f, 1.0f / 3.0f,
-	-0.5f, -0.5f,  0.5f, 1.0f / 4.0f, 0.0f / 3.0f,
-	 0.5f, -0.5f,  0.5f, 2.0f / 4.0f, 0.0f / 3.0f,
-	 0.5f, -0.5f,  0.5f, 2.0f / 4.0f, 0.0f / 3.0f,
-	 0.5f, -0.5f, -0.5f, 2.0f / 4.0f, 1.0f / 3.0f,
-	-0.5f, -0.5f, -0.5f, 1.0f / 4.0f, 1.0f / 3.0f,
-};
 
 class BlockRenderer
 {
@@ -65,8 +16,8 @@ private:
 	unsigned int VAO, VBO;
 	Shader &shader;
 	glm::mat4 model;
-
 	std::unordered_map<BlockID, unsigned int> texture_map;
+
 public:
 	BlockRenderer(Shader &shader)
 		: shader(shader)
@@ -132,7 +83,6 @@ public:
 		model = glm::mat4(1.0f);
 		glm::vec3 posVec = glm::vec3((float)posX, (float)posY, (float)posZ);
 		model = glm::translate(model, posVec);
-		//model = glm::rotate(model, glm::radians(50.0f * (float)glfwGetTime()), glm::vec3(0.0f, 1.0f, 0.0f));
 		shader.setMat4("model", model);
 
 		glBindVertexArray(VAO);
