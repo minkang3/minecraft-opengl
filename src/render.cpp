@@ -1,10 +1,11 @@
 #include <render.hpp>
+#include <cassert>
 
 namespace Render
 {
 	int init(BlockRender &render)
 	{
-		Shader::init(render.shaderID);
+		assert(render.shaderID != SHADER_ID_UNINIT && "Shader must be initialized before renderer");
 
 		unsigned int VAO, VBO;
 		glGenVertexArrays(1, &VAO);
@@ -33,6 +34,8 @@ namespace Render
 		init_texture(render, BlockID::GRASS, "assets/grass.png");
 		init_texture(render, BlockID::STONE, "assets/stone.png");
 		init_texture(render, BlockID::DIRT, "assets/dirt.png");
+
+		Shader::setInt(render.shaderID, "texture1", 0);
 	}
 
 	void init_texture(BlockRender &render, BlockID block_id, std::string file_path)
@@ -63,8 +66,6 @@ namespace Render
 		stbi_image_free(data);
 
 		render.texture_map[block_id] = texture;
-
-		Shader::setInt(render.shaderID, "texture1", texture);
 	}
 
 	bool set_texture(BlockRender &render, BlockID block_id)
@@ -72,6 +73,7 @@ namespace Render
 		if (render.texture_map.find(block_id) == render.texture_map.end())
 			return false;
 
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, render.texture_map[block_id]);
 		return true;
 	}

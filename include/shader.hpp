@@ -16,6 +16,7 @@
 namespace Shader
 {
     int init(ShaderID &shaderID);
+    int set_projection_mat(ShaderID ID);
     void use(ShaderID ID);
     void setBool(ShaderID ID, const std::string &name, bool value);
     void setInt(ShaderID ID, const std::string &name, int value);

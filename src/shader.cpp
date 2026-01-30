@@ -1,5 +1,7 @@
 #include <shader.hpp>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -62,9 +64,23 @@ namespace Shader
         glDeleteShader(vertex);
         glDeleteShader(fragment);
 
+        set_projection_mat(ID);
+
 		shaderID = ID;
 
 		return 0;
+    }
+
+    int set_projection_mat(ShaderID ID)
+    {
+        use(ID);
+	 
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+        setMat4(ID, "projection", projection);
+
+        return 0;
     }
 
 	// activate the shader

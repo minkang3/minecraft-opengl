@@ -40,27 +40,11 @@ int main()
 	 WorldData   world  = { };
 
 	 Window::init(state);
+	 Shader::init(render.shaderID);
 	 Render::init(render);
 	 World::init(world, -20, 20, -5, 5, -20, 20);
 
-	 //World world(-20, 20, -5, 5, -20, 20);
-
 	 camera.set_world(&world);
-
-	 World::fill(world, BlockID::GRASS, -5, 5, 0, 0, -5, 5);
-
-	 World::place(world, BlockID::STONE, 1, 1, 1);
-	 World::place(world, BlockID::DIRT, 2, 1, 1);
-	 World::place(world, BlockID::DIRT, 0, 5, 0);
-
-	 World::place(world, BlockID::STONE, -5, 1, 0);
-
-	 Shader::use(render.shaderID);
-	 
-	 glm::mat4 projection = glm::mat4(1.0f);
-	 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
-	 Shader::setMat4(render.shaderID, "projection", projection);
 
 	 while (!glfwWindowShouldClose(state.window)) {
 		  deltaTime = (float)glfwGetTime() - lastTime;

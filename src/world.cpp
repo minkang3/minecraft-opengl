@@ -14,6 +14,15 @@ namespace World
 
 		world.blocks.resize(world.xsize * world.ysize * world.zsize);
 
+		// TEMP
+		fill(world, BlockID::GRASS, -5, 5, 0, 0, -5, 5);
+
+		place(world, BlockID::STONE, 1, 1, 1);
+		place(world, BlockID::DIRT, 2, 1, 1);
+		place(world, BlockID::DIRT, 0, 5, 0);
+
+		place(world, BlockID::STONE, -5, 1, 0);
+
 		return 0;
 	}
 

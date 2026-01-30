@@ -13,9 +13,11 @@
 
 typedef unsigned int textureID;
 
+#define SHADER_ID_UNINIT 0xdeadbeef
+
 struct BlockRender
 {
-	ShaderID shaderID;
+	ShaderID shaderID = SHADER_ID_UNINIT;
 	unsigned int VAO, VBO;
 	std::unordered_map<BlockID, textureID> texture_map;
 };
