@@ -1,5 +1,7 @@
 #include <camera.hpp>
 
+#include <collision.hpp>
+
 namespace Camera
 {
 	int init(CameraData &camera)
@@ -97,7 +99,7 @@ namespace Camera
 		camera.fallSpeed += deltaTime * camera.fallAccel; // TODO: move this somewhere nicer
 
 		camera.pos.y += moveVector.y * deltaTime;
-		std::vector<std::pair<glm::vec3, BlockCoords>> norms_and_blocks = get_all_collision_norms(camera, world);
+		std::vector<std::pair<glm::vec3, BlockCoords>> norms_and_blocks = Collision::get_all_collision_norms(camera, world);
 
 		for (const auto &[norm, block] : norms_and_blocks) {
 			// block is +y and moving +y
@@ -118,7 +120,7 @@ namespace Camera
 		}
 
 		camera.pos.x += moveVector.x * deltaTime;
-		norms_and_blocks = get_all_collision_norms(camera, world);
+		norms_and_blocks = Collision::get_all_collision_norms(camera, world);
 
 		for (const auto &[norm, block] : norms_and_blocks) {
 			// block is -x and moving -x
@@ -134,7 +136,7 @@ namespace Camera
 		}
 
 		camera.pos.z += moveVector.z * deltaTime;
-		norms_and_blocks = get_all_collision_norms(camera, world);
+		norms_and_blocks = Collision::get_all_collision_norms(camera, world);
 
 		for (const auto &[norm, block] : norms_and_blocks) {
 			// block is -z and moving -z
@@ -155,34 +157,7 @@ namespace Camera
 		// std::cout << "z: " << camera.pos.z << std::endl;
 	}
 
-	std::vector<std::pair<glm::vec3, BlockCoords>> get_all_collision_norms(CameraData &camera, WorldData &world)
-	{
-		// p[xyz] -> player [xyz]
-		int px = std::round(camera.pos.x);
-		int py = std::round(camera.pos.y);
-		int pz = std::round(camera.pos.z);
-		
-		std::vector<std::pair<glm::vec3, BlockCoords>> res;
-		AABB player_box = make_player_aabb(camera.pos, camera.playerWidth, camera.playerHeight, camera.playerHeightOffset);
-		// loop over three by three area around player
-		for (int bz = pz - 1; bz <= pz + 1; ++bz) {
-			for (int by = py - 3; by <= py + 1; ++by) { // TODO: make 3 dependent on player height
-				for (int bx = px - 1; bx <= px + 1; ++bx) {
-					if (World::at(world, bx, by, bz) == BlockID::NONE)
-						continue;
-					AABB block_box  = make_block_aabb(bx, by, bz);
-					if (is_colliding(player_box, block_box)) {
-						glm::vec3 collision_norm = get_collision_normal(player_box, block_box);
-						BlockCoords coords = { bx, by, bz };
-						//std::pair<glm::vec3, BlockID> norm_and_coords = { collision_norm, {bx, by, bz} };
-						res.emplace_back(collision_norm, coords);
-					}
-				}
-			}
-		}
 
-		return res;
-	}
 
 	void place_block(CameraData &camera, WorldData &world)
 	{
@@ -194,8 +169,8 @@ namespace Camera
 				for (int x = world.xmin; x < world.xmin + world.xsize; ++x) {
 					if (World::at(world, x, y, z) == BlockID::NONE)
 						continue;
-					AABB aabb = make_block_aabb(x, y, z);
-					RayFace rayface = draw_ray_to_block(camera, aabb);
+					AABB aabb = Collision::make_block_aabb(x, y, z);
+					RayFace rayface = Collision::draw_ray_to_block(camera.pos, camera.dir, aabb);
 					if (rayface.axis == Axis::INVALID && rayface.face == Face::INVALID) {
 						//std::cout << "invalid" << std::endl;
 						continue;
@@ -243,122 +218,4 @@ namespace Camera
 		std::cout << "new coords:" << std::endl;
 		std::cout << "(" << new_coords.x << ", " << new_coords.y << ", " << new_coords.z << ")" << std::endl;
 	}
-
-	RayFace draw_ray_to_block(CameraData &camera, AABB aabb)
-	{
-		float x_low  = aabb.min.x;
-		float x_high = aabb.max.x;
-		float y_low  = aabb.min.y;
-		float y_high = aabb.max.y;
-		float z_low  = aabb.min.z;
-		float z_high = aabb.max.z;
-
-		float o_x = camera.pos.x;
-		float o_y = camera.pos.y;
-		float o_z = camera.pos.z;
-
-		float r_x = camera.dir.x;
-		float r_y = camera.dir.y;
-		float r_z = camera.dir.z;
-
-		float t_x_low  = (x_low  - o_x) / r_x;
-		float t_x_high = (x_high - o_x) / r_x;
-
-		float t_y_low  = (y_low  - o_y) / r_y;
-		float t_y_high = (y_high - o_y) / r_y;
-
-		float t_z_low  = (z_low  - o_z) / r_z;
-		float t_z_high = (z_high - o_z) / r_z;
-
-		// float t_x_close = std::min(t_x_low, t_x_high);
-		// float t_x_far   = std::max(t_x_low, t_x_high);
-
-		float t_x_close, t_x_far;
-		Face t_x_close_sel;
-
-		if (t_x_low < t_x_high) {
-			t_x_close = t_x_low;
-			t_x_far   = t_x_high;
-			t_x_close_sel = Face::LOW;
-		} else {
-			t_x_close = t_x_high;
-			t_x_far   = t_x_low;
-			t_x_close_sel = Face::HIGH;
-		}
-
-		float t_y_close, t_y_far;
-		Face t_y_close_sel;
-
-		if (t_y_low < t_y_high) {
-			t_y_close = t_y_low;
-			t_y_far   = t_y_high;
-			t_y_close_sel = Face::LOW;
-		} else {
-			t_y_close = t_y_high;
-			t_y_far   = t_y_low;
-			t_y_close_sel = Face::HIGH;
-		}
-
-		float t_z_close, t_z_far;
-		Face t_z_close_sel;
-
-		if (t_z_low < t_z_high) {
-			t_z_close = t_z_low;
-			t_z_far   = t_z_high;
-			t_z_close_sel = Face::LOW;
-		} else {
-			t_z_close = t_z_high;
-			t_z_far   = t_z_low;
-			t_z_close_sel = Face::HIGH;
-		}
-
-		//float t_close = std::max(t_x_close, std::max(t_y_close, t_z_close));
-		float t_close;
-		Axis t_close_axis;
-		Face t_close_sel;
-		if (t_x_close > t_y_close && t_x_close > t_z_close) {
-			t_close = t_x_close;
-			t_close_axis = Axis::X_AXIS;
-			t_close_sel = t_x_close_sel;
-		} else if (t_y_close > t_z_close) {
-			t_close = t_y_close;
-			t_close_axis = Axis::Y_AXIS;
-			t_close_sel = t_y_close_sel;
-		} else {
-			t_close = t_z_close;
-			t_close_axis = Axis::Z_AXIS;
-			t_close_sel = t_z_close_sel;
-		}
-		float t_far   = std::min(t_x_far, std::min(t_y_far, t_z_far));
-
-		//std::cout << "t_close: " << t_close << ", t_far: " << t_far << std::endl;
-		if (t_close > 0 && t_close < t_far) {
-			//std::cout << "branch 1" << std::endl;
-			return { t_close_axis, t_close_sel, t_close };
-		}
-		else {
-			//std::cout << "branch 2" << std::endl;
-			return { Axis::INVALID, Face::INVALID, 0.0f };
-		}
-	}
-}
-
-std::ostream& operator<<(std::ostream& os, Face f) {
-    switch (f) {
-	case Face::INVALID:   return os << "INVALID";
-	case Face::LOW: return os << "LOW";
-	case Face::HIGH:  return os << "HIGH";
-        default:           return os << "Unknown";
-    }
-}
-
-std::ostream& operator<<(std::ostream& os, Axis a) {
-    switch (a) {
-	case Axis::INVALID:   return os << "INVALID";
-	case Axis::X_AXIS: return os << "X_AXIS";
-	case Axis::Y_AXIS: return os << "Y_AXIS";
-	case Axis::Z_AXIS: return os << "Z_AXIS";
-
-        default:           return os << "Unknown";
-    }
 }

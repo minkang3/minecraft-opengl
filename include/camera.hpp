@@ -2,7 +2,6 @@
 
 #include <shader.hpp>
 #include <world.hpp>
-#include <collision.hpp>
 
 #include <iostream>
 #include <cmath>
@@ -20,28 +19,8 @@ enum CameraDir {
 	NONE
 };
 
-enum class Face {
-	INVALID,
-	LOW,
-	HIGH
-};
 
-enum class Axis {
-	INVALID,
-	X_AXIS,
-	Y_AXIS,
-	Z_AXIS
-};
 
-struct RayFace
-{
-	Axis axis;
-	Face face;
-	float t;
-};
-
-std::ostream& operator<<(std::ostream& os, Face f);
-std::ostream& operator<<(std::ostream& os, Axis a);
 
 struct CameraData
 {
@@ -71,7 +50,5 @@ namespace Camera
 	void queue_horz_move(CameraData &camera, CameraDir dir);
 	glm::vec3 move_bitmap_to_move_v3(CameraData &camera);
 	void update_pos(CameraData &camera, WorldData &world, float deltaTime);
-	std::vector<std::pair<glm::vec3, BlockCoords>> get_all_collision_norms(CameraData &camera, WorldData &world);
 	void place_block(CameraData &camera, WorldData &world);
-	RayFace draw_ray_to_block(CameraData &camera, AABB aabb);
 }
