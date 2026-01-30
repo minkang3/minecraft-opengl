@@ -62,9 +62,6 @@ int main()
 
 	 Shader::setMat4(render.shaderID, "projection", projection);
 
-	 std::cout << "spot 1" << std::endl;
-	 
-
 	 while (!glfwWindowShouldClose(state.window)) {
 		  deltaTime = (float)glfwGetTime() - lastTime;
 		  lastTime = (float)glfwGetTime();
@@ -72,9 +69,7 @@ int main()
 		  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		  glClear(GL_COLOR_BUFFER_BIT);
 
-		  std::cout << "spot 2" << std::endl;
 		  World::draw(world, render);
-		  std::cout << "spot 3" << std::endl;
 
 		  camera.reset_move();
 		  processInput(state.window);

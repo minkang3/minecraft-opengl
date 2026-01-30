@@ -8,6 +8,10 @@ namespace World
 		world.zsize = zmax - zmin + 1;
 		world.ysize = ymax - ymin + 1;
 
+		world.xmin = xmin;
+		world.ymin = ymin;
+		world.zmin = zmin;
+
 		world.blocks.resize(world.xsize * world.ysize * world.zsize);
 
 		return 0;
@@ -15,11 +19,6 @@ namespace World
 
 	BlockID& at(WorldData &world, int x, int y, int z)
 	{
-		int ret = (x - world.xmin) +
-							 (y - world.ymin) * world.xsize +
-			(z - world.zmin) * world.xsize * world.ysize;
-
-		printf("ret: %d\n", ret);
 		return world.blocks[ (x - world.xmin) +
 							 (y - world.ymin) * world.xsize +
 							 (z - world.zmin) * world.xsize * world.ysize ];
@@ -30,8 +29,6 @@ namespace World
 		for (int z = world.zmin; z < world.zmin + world.zsize; ++z) {
 			for (int y = world.ymin; y < world.ymin + world.ysize; ++y) {
 				for (int x = world.xmin; x < world.xmin + world.xsize; ++x) {
-					//std::cout << "spot 4"  << std::endl;
-					printf("x: %d, y: %d, z: %d\n", x, y, z);
 					if (World::at(world, x, y, z) == BlockID::GRASS) {
 						Render::set_texture(render, BlockID::GRASS);
 						Render::draw(render, x, y, z);
@@ -39,13 +36,9 @@ namespace World
 						Render::set_texture(render, BlockID::STONE);
 						Render::draw(render, x, y, z);
 					} else if (World::at(world, x, y, z) == BlockID::DIRT) {
-						printf("dirt\n");
 						Render::set_texture(render, BlockID::DIRT);
-						printf("spot 6\n");
 						Render::draw(render, x, y, z);
-						printf("spot 7\n");
 					}
-					printf("after\n");
 				}
 			}
 		}

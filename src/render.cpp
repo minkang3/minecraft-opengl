@@ -78,15 +78,15 @@ namespace Render
 
 	void draw(BlockRender &render, int posX, int posY, int posZ)
 	{
-		Shader::use(render.shaderID);
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::vec3 posVec = glm::vec3((float)posX, (float)posY, (float)posZ);
+
 		model = glm::translate(model, posVec);
+
+		Shader::use(render.shaderID);
 		Shader::setMat4(render.shaderID, "model", model);
-		printf("spot 7\n");
+
 		glBindVertexArray(render.VAO);
-		printf("spot 8\n");
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-		printf("spot 9\n");
 	}
 }
