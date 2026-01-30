@@ -73,10 +73,10 @@ namespace Camera
 {
 	int init(CameraData &camera);
 	void update(CameraData &camera, WorldData &world, float deltaTime);
-	void queue_horz_move(CameraData &camera, CameraDir dir);
-	void move(CameraData &camera, WorldData &world, float deltaTime);
-	void jump(CameraData &camera);
 	void move_cam(CameraData &camera, double dx, double dy);
+	void queue_horz_move(CameraData &camera, CameraDir dir);
+	glm::vec3 calc_horz_move_vector(CameraData &camera);
+	void update_pos(CameraData &camera, WorldData &world, float deltaTime);
 	std::vector<std::pair<glm::vec3, BlockCoords>> get_all_collision_norms(CameraData &camera, WorldData &world);
 	void place_block(CameraData &camera, WorldData &world);
 	RayFace draw_ray_to_block(CameraData &camera, AABB aabb);

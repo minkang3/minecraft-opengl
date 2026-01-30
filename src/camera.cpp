@@ -35,7 +35,18 @@ namespace Camera
 								  camera.cameraPos + camera.cameraDir,
 								  camera.cameraUp);
 
-		move(camera, world, deltaTime);
+		update_pos(camera, world, deltaTime);
+	}
+
+	void move_cam(CameraData &camera, double dx, double dy)
+	{
+		camera.yaw += (float) dx * 0.01f; // TODO: make 0.01f a sensitivity variale
+		camera.pitch -= (float) dy * 0.01f;
+
+		if (camera.pitch > 89.0f)
+			camera.pitch = 89.0f;
+		if (camera.pitch < -89.0f)
+			camera.pitch = -89.0f;
 	}
 
 	void queue_horz_move(CameraData &camera, CameraDir dir)
@@ -56,7 +67,7 @@ namespace Camera
 		}
 	}
 
-	static glm::vec3 calc_horz_move_vector(CameraData &camera)
+	glm::vec3 calc_horz_move_vector(CameraData &camera)
 	{
 		glm::vec3 dir = camera.cameraDir;
 		dir.y = 0;
@@ -82,7 +93,7 @@ namespace Camera
 		return glm::length(move) > 0.01 ? glm::normalize(move) : move;
 	}
 
-	void move(CameraData &camera, WorldData &world, float deltaTime)
+	void update_pos(CameraData &camera, WorldData &world, float deltaTime)
 	{
 		glm::vec3 moveVector = calc_horz_move_vector(camera);
 		moveVector.x = moveVector.x * camera.speed;
@@ -150,24 +161,9 @@ namespace Camera
 		// std::cout << "z: " << camera.cameraPos.z << std::endl;
 	}
 
-	void jump(CameraData &camera)
-	{
-		camera.shouldJump = true;
-	}
-
-	void move_cam(CameraData &camera, double dx, double dy)
-	{
-		camera.yaw += (float) dx * 0.01f; // TODO: make 0.01f a sensitivity variale
-		camera.pitch -= (float) dy * 0.01f;
-
-		if (camera.pitch > 89.0f)
-			camera.pitch = 89.0f;
-		if (camera.pitch < -89.0f)
-			camera.pitch = -89.0f;
-	}
-
 	std::vector<std::pair<glm::vec3, BlockCoords>> get_all_collision_norms(CameraData &camera, WorldData &world)
 	{
+		// p[xyz] -> player [xyz]
 		int px = std::round(camera.cameraPos.x);
 		int py = std::round(camera.cameraPos.y);
 		int pz = std::round(camera.cameraPos.z);
