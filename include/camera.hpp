@@ -20,9 +20,48 @@ enum CameraDir {
 	NONE
 };
 
+enum class Face {
+	INVALID,
+	LOW,
+	HIGH
+};
+
+enum class Axis {
+	INVALID,
+	X_AXIS,
+	Y_AXIS,
+	Z_AXIS
+};
+
+struct RayFace
+{
+	Axis axis;
+	Face face;
+	float t;
+};
+
+std::ostream& operator<<(std::ostream& os, Face f) {
+    switch (f) {
+	case Face::INVALID:   return os << "INVALID";
+	case Face::LOW: return os << "LOW";
+	case Face::HIGH:  return os << "HIGH";
+        default:           return os << "Unknown";
+    }
+}
+
+std::ostream& operator<<(std::ostream& os, Axis a) {
+    switch (a) {
+	case Axis::INVALID:   return os << "INVALID";
+	case Axis::X_AXIS: return os << "X_AXIS";
+	case Axis::Y_AXIS: return os << "Y_AXIS";
+	case Axis::Z_AXIS: return os << "Z_AXIS";
+
+        default:           return os << "Unknown";
+    }
+}
+
 class Camera
 {
-	//private:
 public:
 	glm::mat4 view;
 	glm::vec3 cameraPos;
@@ -38,14 +77,15 @@ public:
 	float playerHeight;
 	float playerHeightOffset;
 
-	bool should_jump;
-
+	bool shouldJump;
+	World *world;
 
 public:
 	float yaw;
 	float pitch;
 	float speed;
 	Camera()
+		: world(world)
 	{
 		view = glm::mat4(1.0f);
 		cameraPos = glm::vec3(0.0f, 5.0f, 0.0f);
@@ -62,6 +102,11 @@ public:
 		playerWidth = DEFAULT_PLAYER_WIDTH;
 		playerHeight = DEFAULT_PLAYER_HEIGHT;
 		playerHeightOffset = DEFAULT_PLAYER_HEIGHT_OFFSET;
+	}
+
+	void set_world(World *world)
+	{
+		this->world = world;
 	}
 
 	glm::mat4 get_view()
@@ -124,7 +169,7 @@ public:
 				cameraPos.y = (float)block.y + (BLOCK_WIDTH / 2.0f + playerHeight - playerHeightOffset);
 				if (!(fallSpeed < 0))
 					fallSpeed = 0;
-				if (should_jump) {
+				if (shouldJump) {
 					fallSpeed = -8.0f;
 				}
 			}
@@ -161,7 +206,7 @@ public:
 				cameraPos.z = (float)block.z - (BLOCK_WIDTH / 2.0f + playerWidth / 2.0f);
 			}
 		}
-		should_jump = false;
+		shouldJump = false;
 		// std::cout << "postcalc:\n";
 		// std::cout << "x: " << cameraPos.x << "\n";
 		// std::cout << "y: " << cameraPos.y << "\n";
@@ -205,7 +250,7 @@ public:
 
 	void jump()
 	{
-		should_jump = true;
+		shouldJump = true;
 	}
 
 	void move_cam(double dx, double dy)
@@ -264,5 +309,163 @@ public:
 		}
 
 		return res;
+	}
+
+	void place_block()
+	{
+		std::vector<std::pair<RayFace, BlockCoords>> rayfaces;
+		// need to draw a ray
+		// need to find which block it hits and what face
+		for (int z = world->zmin; z < world->zmin + world->zsize; ++z) {
+			for (int y = world->ymin; y < world->ymin + world->ysize; ++y) {
+				for (int x = world->xmin; x < world->xmin + world->xsize; ++x) {
+					if ((*world)(x, y, z) == BlockID::NONE)
+						continue;
+					AABB aabb = make_block_aabb(x, y, z);
+					RayFace rayface = draw_ray_to_block(aabb);
+					if (rayface.axis == Axis::INVALID && rayface.face == Face::INVALID) {
+						//std::cout << "invalid" << std::endl;
+						continue;
+					}
+					BlockCoords coords = { x, y, z };
+					rayfaces.emplace_back(rayface, coords);
+				}
+			}
+		}
+
+		if (rayfaces.size() <= 0)
+			return;
+
+		RayFace closest_rayface;
+		BlockCoords closest_coords;
+		closest_rayface.t = 1.0f / 0.0f; // infinity
+		for (auto &[rayface, coords] : rayfaces) {
+			if (rayface.t <  closest_rayface.t) {
+				closest_rayface = rayface;
+				closest_coords = coords;
+			}
+		}
+		std::cout << "(" << closest_coords.x << ", " << closest_coords.y << ", " << closest_coords.z << ")" << std::endl;
+		std::cout << "axis: " << closest_rayface.axis << ", face: " << closest_rayface.face << "\n" << std::endl;
+
+		BlockCoords new_coords = closest_coords;
+		int delta = 1;
+		if (closest_rayface.face == Face::LOW)
+			delta *= -1;
+
+		switch (closest_rayface.axis) {
+		case Axis::X_AXIS:
+			new_coords.x += delta;
+			break;
+		case Axis::Z_AXIS:
+			new_coords.z += delta;
+			break;
+		case Axis::Y_AXIS:
+			new_coords.y += delta;
+			break;
+		}
+
+		(*world)(new_coords.x, new_coords.y, new_coords.z) = BlockID::STONE;
+
+		std::cout << "new coords:" << std::endl;
+		std::cout << "(" << new_coords.x << ", " << new_coords.y << ", " << new_coords.z << ")" << std::endl;
+	}
+
+	RayFace draw_ray_to_block(AABB aabb)
+	{
+		float x_low  = aabb.min.x;
+		float x_high = aabb.max.x;
+		float y_low  = aabb.min.y;
+		float y_high = aabb.max.y;
+		float z_low  = aabb.min.z;
+		float z_high = aabb.max.z;
+
+		float o_x = cameraPos.x;
+		float o_y = cameraPos.y;
+		float o_z = cameraPos.z;
+
+		float r_x = cameraDir.x;
+		float r_y = cameraDir.y;
+		float r_z = cameraDir.z;
+
+		float t_x_low  = (x_low  - o_x) / r_x;
+		float t_x_high = (x_high - o_x) / r_x;
+
+		float t_y_low  = (y_low  - o_y) / r_y;
+		float t_y_high = (y_high - o_y) / r_y;
+
+		float t_z_low  = (z_low  - o_z) / r_z;
+		float t_z_high = (z_high - o_z) / r_z;
+
+		// float t_x_close = std::min(t_x_low, t_x_high);
+		// float t_x_far   = std::max(t_x_low, t_x_high);
+
+		float t_x_close, t_x_far;
+		Face t_x_close_sel;
+
+		if (t_x_low < t_x_high) {
+			t_x_close = t_x_low;
+			t_x_far   = t_x_high;
+			t_x_close_sel = Face::LOW;
+		} else {
+			t_x_close = t_x_high;
+			t_x_far   = t_x_low;
+			t_x_close_sel = Face::HIGH;
+		}
+
+		float t_y_close, t_y_far;
+		Face t_y_close_sel;
+
+		if (t_y_low < t_y_high) {
+			t_y_close = t_y_low;
+			t_y_far   = t_y_high;
+			t_y_close_sel = Face::LOW;
+		} else {
+			t_y_close = t_y_high;
+			t_y_far   = t_y_low;
+			t_y_close_sel = Face::HIGH;
+		}
+
+		float t_z_close, t_z_far;
+		Face t_z_close_sel;
+
+		if (t_z_low < t_z_high) {
+			t_z_close = t_z_low;
+			t_z_far   = t_z_high;
+			t_z_close_sel = Face::LOW;
+		} else {
+			t_z_close = t_z_high;
+			t_z_far   = t_z_low;
+			t_z_close_sel = Face::HIGH;
+		}
+
+		//float t_close = std::max(t_x_close, std::max(t_y_close, t_z_close));
+		float t_close;
+		Axis t_close_axis;
+		Face t_close_sel;
+		if (t_x_close > t_y_close && t_x_close > t_z_close) {
+			t_close = t_x_close;
+			t_close_axis = Axis::X_AXIS;
+			t_close_sel = t_x_close_sel;
+		} else if (t_y_close > t_z_close) {
+			t_close = t_y_close;
+			t_close_axis = Axis::Y_AXIS;
+			t_close_sel = t_y_close_sel;
+		} else {
+			t_close = t_z_close;
+			t_close_axis = Axis::Z_AXIS;
+			t_close_sel = t_z_close_sel;
+		}
+		float t_far   = std::min(t_x_far, std::min(t_y_far, t_z_far));
+
+		//std::cout << "t_close: " << t_close << ", t_far: " << t_far << std::endl;
+		if (t_close > 0 && t_close < t_far) {
+			//std::cout << "branch 1" << std::endl;
+			return { t_close_axis, t_close_sel, t_close };
+		}
+		else {
+			//std::cout << "branch 2" << std::endl;
+			return { Axis::INVALID, Face::INVALID, 0.0f };
+		}
 	}
 };

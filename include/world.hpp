@@ -1,6 +1,6 @@
 #pragma once
 
-#include <block_renderer.h>
+#include <block_renderer.hpp>
 #include <block.hpp>
 #include <cstdint>
 #include <vector>
@@ -12,6 +12,7 @@ class World
 {
 private:
 	std::vector<BlockID> blocks;
+public:
 	int xmin, ymin, zmin;
 	int xsize, ysize, zsize;
 public:

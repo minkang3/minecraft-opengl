@@ -9,7 +9,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include <shader.h>
-#include <block_renderer.h>
+#include <block_renderer.hpp>
 #include <camera.hpp>
 #include <world.hpp>
 #include <collision.hpp>
@@ -27,8 +27,9 @@ Camera camera;
 float lastTime;
 float deltaTime;
 
-double lastX = -1.0f;
-double lastY = -1.0f;
+bool firstMouse = true;
+double lastX;
+double lastY;
 
 int main()
 {
@@ -42,10 +43,15 @@ int main()
 
 	 World world(-20, 20, -5, 5, -20, 20);
 
+	 camera.set_world(&world);
+
 	 world.fill(BlockID::GRASS, -5, 5, 0, 0, -5, 5);
 
 	 world.place(BlockID::STONE, 1, 1, 1);
 	 world.place(BlockID::DIRT, 2, 1, 1);
+	 world.place(BlockID::DIRT, 0, 5, 0);
+
+	 world.place(BlockID::STONE, -5, 1, 0);
 
 	 myShader.use();
 	 
@@ -69,8 +75,6 @@ int main()
 		  camera.move(deltaTime, world);
 		  camera.update();
 		  myShader.setMat4("view", camera.get_view());
-
-		  //std::cout << "feet y: " << camera.cameraPos.y + camera.playerHeightOffset - camera.playerHeight << std::endl;
 
 		  glfwSwapBuffers(window);
 		  glfwPollEvents();
@@ -116,9 +120,18 @@ GLFWwindow *init()
 
 void processInput(GLFWwindow *window)
 {
+	 static bool rightClickFirst = true;
 	 if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS ||
 		 glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 		  glfwSetWindowShouldClose(window, true);
+
+	 if (rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+		  std::cout << "right click detected" << std::endl;
+		  camera.place_block();
+		  rightClickFirst = false;
+	 } else if (!rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
+		  rightClickFirst = true;
+	 }
 	 
 	 if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		  camera.move_horz(FORWARD, deltaTime);
@@ -156,9 +169,11 @@ void framebuffer_size_cb(GLFWwindow *window, int width, int height)
 
 void mouse_cb(GLFWwindow *window, double x, double y)
 {
-	 if (lastX < 0 && lastY < 0) {
+	 //std::cout << "in mouse_cb: (" << x << ", " << y << ")" << std::endl;
+	 if (firstMouse) {
 		  lastX = x;
 		  lastY = y;
+		  firstMouse = false;
 		  return;
 	 }
 
