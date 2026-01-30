@@ -78,18 +78,18 @@ namespace Window
 		}
 	 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			Camera::move_horz(camera, FORWARD);
+			Camera::queue_horz_move(camera, FORWARD);
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			Camera::move_horz(camera, BACKWARD);
+			Camera::queue_horz_move(camera, BACKWARD);
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			Camera::move_horz(camera, LEFT);
+			Camera::queue_horz_move(camera, LEFT);
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			Camera::move_horz(camera, RIGHT);
-		if (!(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) &&
-			!(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) &&
-			!(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) &&
-			!(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS))
-			Camera::move_horz(camera, NONE);
+			Camera::queue_horz_move(camera, RIGHT);
+		// if (!(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) &&
+		// 	!(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) &&
+		// 	!(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) &&
+		// 	!(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS))
+		// 	Camera::move_horz(camera, NONE);
 		 
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 			camera.shouldJump = true;

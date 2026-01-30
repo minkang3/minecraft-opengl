@@ -23,34 +23,48 @@ namespace Camera
 		return 0;
 	}
 
-	void move_horz(CameraData &camera, CameraDir dir)
+	void queue_horz_move(CameraData &camera, CameraDir dir)
 	{
-		glm::mat3 stripY = glm::mat3
-			(1.0f, 0.0f, 0.0f,
-			 0.0f, 0.0f, 0.0f,
-			 0.0f, 0.0f, 1.0f);
-
-		glm::vec3 moveDir = glm::normalize(stripY * camera.cameraDir);
-
 		switch (dir) {
 		case FORWARD:
+			camera.move_bitmap |= (1 << FORWARD);
 			break;
 		case BACKWARD:
-			moveDir *= -1;
+			camera.move_bitmap |= (1 << BACKWARD);
 			break;
 		case LEFT:
-			moveDir = -glm::cross(moveDir, camera.cameraUp);
+			camera.move_bitmap |= (1 << LEFT);
 			break;
 		case RIGHT:
-			moveDir =  glm::cross(moveDir, camera.cameraUp);
+			camera.move_bitmap |= (1 << RIGHT);
 			break;
-		case NONE:
-			camera.moveVector = glm::vec3(0.0f, 0.0f, 0.0f);
-			return;
+		}
+	}
+
+	static glm::vec3 calc_horz_move_vector(CameraData &camera)
+	{
+		glm::vec3 dir = camera.cameraDir;
+		dir.y = 0;
+		dir = glm::normalize(dir);
+
+		glm::vec3 move(0.0f, 0.0f, 0.0f);
+
+		if (camera.move_bitmap & (1 << FORWARD)) {
+			move += dir;
+		}
+		if (camera.move_bitmap & (1 << BACKWARD)) {
+			move -= dir;
+		}
+		if (camera.move_bitmap & (1 << LEFT)) {
+			move -= glm::cross(dir, camera.cameraUp);
+		}
+		if (camera.move_bitmap & (1 << RIGHT)) {
+			move += glm::cross(dir, camera.cameraUp);
 		}
 
-		camera.moveVector += moveDir;
-		camera.moveVector = glm::normalize(camera.moveVector);
+		camera.move_bitmap = 0;
+		
+		return glm::length(move) > 0.01 ? glm::normalize(move) : move;
 	}
 
 	void update(CameraData &camera)
@@ -65,15 +79,12 @@ namespace Camera
 		camera.cameraDir = dir;
 	}
 
-	// void reset_move(CameraData &camera)
-	// {
-	// 	camera.moveVector = glm::vec3(0.0f, 0.0f, 0.0f);
-	// }
-
 	void move(CameraData &camera, WorldData &world, float deltaTime)
 	{
+		camera.moveVector = calc_horz_move_vector(camera);
 		camera.moveVector.x = camera.moveVector.x * camera.speed;
 		camera.moveVector.z = camera.moveVector.z * camera.speed;
+		camera.moveVector.y = -camera.fallSpeed;
 
 		camera.fallSpeed += deltaTime * camera.fallAccel; // TODO: move this somewhere nicer
 
@@ -134,13 +145,6 @@ namespace Camera
 		// std::cout << "x: " << camera.cameraPos.x << "\n";
 		// std::cout << "y: " << camera.cameraPos.y << "\n";
 		// std::cout << "z: " << camera.cameraPos.z << std::endl;
-	}
-
-	
-
-	void fall(CameraData &camera, float deltaTime)
-	{
-		camera.moveVector.y = -camera.fallSpeed;
 	}
 
 	void jump(CameraData &camera)

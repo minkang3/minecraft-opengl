@@ -65,16 +65,16 @@ struct CameraData
 	float yaw;
 	float pitch;
 	float speed;
+
+	unsigned char move_bitmap;
 };
 
 namespace Camera
 {
 	int init(CameraData &camera);
-	void move_horz(CameraData &camera, CameraDir dir);
+	void queue_horz_move(CameraData &camera, CameraDir dir);
 	void update(CameraData &camera);
-	void reset_move(CameraData &camera);
 	void move(CameraData &camera, WorldData &world, float deltaTime);
-	void fall(CameraData &camera, float deltaTime);
 	void jump(CameraData &camera);
 	void move_cam(CameraData &camera, double dx, double dy);
 	std::vector<std::pair<glm::vec3, BlockCoords>> get_all_collision_norms(CameraData &camera, WorldData &world);

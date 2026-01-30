@@ -46,9 +46,7 @@ int main()
 		  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		  glClear(GL_COLOR_BUFFER_BIT);
 
-		  //Camera::reset_move(camera);
 		  Window::processInput(window.handle, camera, world);
-		  Camera::fall(camera, state.timestamp_delta);
 		  Camera::move(camera, world, state.timestamp_delta);
 		  Camera::update(camera);
 		  Shader::setMat4(render.shaderID, "view", camera.view);
