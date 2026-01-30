@@ -24,11 +24,6 @@
 float lastTime;
 float deltaTime;
 
-bool firstMouse = true;
-double lastX;
-double lastY;
-
-
 int main()
 {
 	 EngineState state  = { };
@@ -37,17 +32,20 @@ int main()
 	 CameraData  camera = { };
 	 WorldData   world  = { };
 
+	 state.window = &window;
+	 state.camera = &camera;
+
 	 Window::init(window);
 	 Shader::init(render.shaderID);
 	 Render::init(render);
 	 World ::init(world, -20, 20, -5, 5, -20, 20);
 	 Camera::init(camera);
 
-	 glfwSetWindowUserPointer(window.handle, &camera);
+	 glfwSetWindowUserPointer(window.handle, &state);
 
 	 while (!glfwWindowShouldClose(window.handle)) {
 		  deltaTime = (float)glfwGetTime() - lastTime;
-		  lastTime = (float)glfwGetTime();
+		  lastTime  = (float)glfwGetTime();
 
 		  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		  glClear(GL_COLOR_BUFFER_BIT);

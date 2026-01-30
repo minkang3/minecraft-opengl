@@ -1,5 +1,7 @@
 #include <window.hpp>
 
+#include <game_engine.hpp>
+
 #include <iostream>
 
 extern float lastTime;
@@ -52,19 +54,19 @@ namespace Window
 
 	void mouse_cb(GLFWwindow *window, double x, double y)
 	{
-		//std::cout << "in mouse_cb: (" << x << ", " << y << ")" << std::endl;
-		CameraData *camera = static_cast<CameraData*>(glfwGetWindowUserPointer(window));
-		if (firstMouse) {
-			lastX = x;
-			lastY = y;
-			firstMouse = false;
+		EngineState *state = static_cast<EngineState*>(glfwGetWindowUserPointer(window));
+
+		if (state->window->first_mouse_flag) {
+			state->window->mouse_prev_xpos = x;
+			state->window->mouse_prev_ypos = y;
+			state->window->first_mouse_flag = false;
 			return;
 		}
 
-		Camera::move_cam(*camera, x - lastX, y - lastY);
+		Camera::move_cam(*(state->camera), x - state->window->mouse_prev_xpos, y - state->window->mouse_prev_ypos);
 
-		lastX = x;
-		lastY = y;
+		state->window->mouse_prev_xpos = x;
+		state->window->mouse_prev_ypos = y;
 	}
 
 	void processInput(GLFWwindow *window, CameraData &camera, WorldData &world)

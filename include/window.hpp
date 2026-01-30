@@ -9,6 +9,9 @@
 struct WindowData
 {
 	GLFWwindow *handle;
+	bool first_mouse_flag = true;
+	double mouse_prev_xpos;
+	double mouse_prev_ypos;
 };
 
 namespace Window
