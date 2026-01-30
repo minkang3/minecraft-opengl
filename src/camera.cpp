@@ -1,6 +1,6 @@
 #include <camera.hpp>
 
-namespace CameraNS
+namespace Camera
 {
 	int init(CameraData &camera)
 	{

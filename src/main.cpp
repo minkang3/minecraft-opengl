@@ -22,9 +22,9 @@
 
 void framebuffer_size_cb(GLFWwindow *window, int width, int height);
 void mouse_cb(GLFWwindow *window, double x, double y);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window, CameraData &camera, WorldData &world);
 
-Camera camera;
+//Camera camera;
 
 float lastTime;
 float deltaTime;
@@ -33,18 +33,21 @@ bool firstMouse = true;
 double lastX;
 double lastY;
 
+
 int main()
 {
 	 EngineState state  = { };
 	 BlockRender render = { };
+	 CameraData  camera = { };
 	 WorldData   world  = { };
 
 	 Window::init(state);
 	 Shader::init(render.shaderID);
 	 Render::init(render);
-	 World::init(world, -20, 20, -5, 5, -20, 20);
+	 World ::init(world, -20, 20, -5, 5, -20, 20);
+	 Camera::init(camera);
 
-	 camera.set_world(&world);
+	 glfwSetWindowUserPointer(state.window, &camera);
 
 	 while (!glfwWindowShouldClose(state.window)) {
 		  deltaTime = (float)glfwGetTime() - lastTime;
@@ -55,12 +58,12 @@ int main()
 
 		  World::draw(world, render);
 
-		  camera.reset_move();
-		  processInput(state.window);
-		  camera.fall(deltaTime);
-		  camera.move(deltaTime);
-		  camera.update();
-		  Shader::setMat4(render.shaderID, "view", camera.get_view());
+		  Camera::reset_move(camera);
+		  processInput(state.window, camera, world);
+		  Camera::fall(camera, deltaTime);
+		  Camera::move(camera, world, deltaTime);
+		  Camera::update(camera);
+		  Shader::setMat4(render.shaderID, "view", camera.view);
 
 		  glfwSwapBuffers(state.window);
 		  glfwPollEvents();
@@ -71,7 +74,7 @@ int main()
 }
 
 
-void processInput(GLFWwindow *window)
+void processInput(GLFWwindow *window, CameraData &camera, WorldData &world)
 {
 	 static bool rightClickFirst = true;
 	 if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS ||
@@ -80,30 +83,30 @@ void processInput(GLFWwindow *window)
 
 	 if (rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
 		  std::cout << "right click detected" << std::endl;
-		  camera.place_block();
+		  Camera::place_block(camera, world);
 		  rightClickFirst = false;
 	 } else if (!rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
 		  rightClickFirst = true;
 	 }
 	 
 	 if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		  camera.move_horz(FORWARD, deltaTime);
+		  Camera::move_horz(camera, FORWARD, deltaTime);
 	 if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-	  	  camera.move_horz(BACKWARD, deltaTime);
+	  	  Camera::move_horz(camera, BACKWARD, deltaTime);
 	 if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	  	  camera.move_horz(LEFT, deltaTime);
+	  	  Camera::move_horz(camera, LEFT, deltaTime);
 	 if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	  	  camera.move_horz(RIGHT, deltaTime);
+	  	  Camera::move_horz(camera, RIGHT, deltaTime);
 	 if (!(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) &&
 		 !(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) &&
 		 !(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) &&
 		 !(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS))
-		  camera.move_horz(NONE, deltaTime);
+		  Camera::move_horz(camera, NONE, deltaTime);
 		 
 	 if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		  camera.jump();
+		  camera.shouldJump = true;
 	 // if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-	 // 	  camera.move_vert(-1, deltaTime);
+	 // 	  Camera::move_vert(camera, -1, deltaTime);
 	 
 	 if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
 		  camera.speed += 0.1f;
@@ -123,6 +126,7 @@ void framebuffer_size_cb(GLFWwindow *window, int width, int height)
 void mouse_cb(GLFWwindow *window, double x, double y)
 {
 	 //std::cout << "in mouse_cb: (" << x << ", " << y << ")" << std::endl;
+	 CameraData *camera = static_cast<CameraData*>(glfwGetWindowUserPointer(window));
 	 if (firstMouse) {
 		  lastX = x;
 		  lastY = y;
@@ -130,7 +134,7 @@ void mouse_cb(GLFWwindow *window, double x, double y)
 		  return;
 	 }
 
-	 camera.move_cam(x - lastX, y - lastY);
+	 Camera::move_cam(*camera, x - lastX, y - lastY);
 
 	 lastX = x;
 	 lastY = y;

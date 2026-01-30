@@ -67,7 +67,7 @@ struct CameraData
 	float speed;
 };
 
-namespace CameraNS
+namespace Camera
 {
 	int init(CameraData &camera);
 	void update(CameraData &camera);
@@ -82,6 +82,7 @@ namespace CameraNS
 	RayFace draw_ray_to_block(CameraData &camera, AABB aabb);
 }
 
+/*
 class Camera
 {
 public:
@@ -477,3 +478,5 @@ public:
 		}
 	}
 };
+
+*/
