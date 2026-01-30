@@ -4,9 +4,9 @@ namespace Camera
 {
 	int init(CameraData &camera)
 	{
-		camera.cameraPos = glm::vec3(0.0f, 5.0f, 0.0f);
-		camera.cameraDir = glm::vec3(0.0f, 0.0f, -1.0f);
-		camera.cameraUp  = glm::vec3(0.0f, 1.0f, 0.0f);
+		camera.pos = glm::vec3(0.0f, 5.0f, 0.0f);
+		camera.dir = glm::vec3(0.0f, 0.0f, -1.0f);
+		camera.up  = glm::vec3(0.0f, 1.0f, 0.0f);
 
 		camera.speed = DEFAULT_SPEED;
 		camera.fallSpeed = 0.0f;
@@ -27,7 +27,7 @@ namespace Camera
 		dir.x = cos(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
 		dir.y = sin(glm::radians(camera.pitch));
 		dir.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
-		camera.cameraDir = dir;
+		camera.dir = dir;
 
 		update_pos(camera, world, deltaTime);
 	}
@@ -61,9 +61,9 @@ namespace Camera
 		}
 	}
 
-	glm::vec3 calc_horz_move_vector(CameraData &camera)
+	glm::vec3 move_bitmap_to_move_v3(CameraData &camera)
 	{
-		glm::vec3 dir = camera.cameraDir;
+		glm::vec3 dir = camera.dir;
 		dir.y = 0;
 		dir = glm::normalize(dir);
 
@@ -76,10 +76,10 @@ namespace Camera
 			move -= dir;
 		}
 		if (camera.move_bitmap & (1 << LEFT)) {
-			move -= glm::cross(dir, camera.cameraUp);
+			move -= glm::cross(dir, camera.up);
 		}
 		if (camera.move_bitmap & (1 << RIGHT)) {
-			move += glm::cross(dir, camera.cameraUp);
+			move += glm::cross(dir, camera.up);
 		}
 
 		camera.move_bitmap = 0;
@@ -89,14 +89,14 @@ namespace Camera
 
 	void update_pos(CameraData &camera, WorldData &world, float deltaTime)
 	{
-		glm::vec3 moveVector = calc_horz_move_vector(camera);
+		glm::vec3 moveVector = move_bitmap_to_move_v3(camera);
 		moveVector.x = moveVector.x * camera.speed;
 		moveVector.z = moveVector.z * camera.speed;
 		moveVector.y = -camera.fallSpeed;
 
 		camera.fallSpeed += deltaTime * camera.fallAccel; // TODO: move this somewhere nicer
 
-		camera.cameraPos.y += moveVector.y * deltaTime;
+		camera.pos.y += moveVector.y * deltaTime;
 		std::vector<std::pair<glm::vec3, BlockCoords>> norms_and_blocks = get_all_collision_norms(camera, world);
 
 		for (const auto &[norm, block] : norms_and_blocks) {
@@ -108,7 +108,7 @@ namespace Camera
 			// block is -y and moving -y
 			else if (norm.y < -0.01f && moveVector.y < -0.01f) {
 				//moveVector.y = 0.0f;
-				camera.cameraPos.y = (float)block.y + (BLOCK_WIDTH / 2.0f + camera.playerHeight - camera.playerHeightOffset);
+				camera.pos.y = (float)block.y + (BLOCK_WIDTH / 2.0f + camera.playerHeight - camera.playerHeightOffset);
 				if (!(camera.fallSpeed < 0))
 					camera.fallSpeed = 0;
 				if (camera.shouldJump) {
@@ -117,53 +117,53 @@ namespace Camera
 			}
 		}
 
-		camera.cameraPos.x += moveVector.x * deltaTime;
+		camera.pos.x += moveVector.x * deltaTime;
 		norms_and_blocks = get_all_collision_norms(camera, world);
 
 		for (const auto &[norm, block] : norms_and_blocks) {
 			// block is -x and moving -x
 			if (norm.x < -0.01f && moveVector.x < -0.01f) {
 				//moveVector.x = 0.0f;
-				camera.cameraPos.x = (float)block.x + (BLOCK_WIDTH / 2.0f + camera.playerWidth / 2.0f);
+				camera.pos.x = (float)block.x + (BLOCK_WIDTH / 2.0f + camera.playerWidth / 2.0f);
 			}
 			// block is +x and moving +x
 			else if (norm.x > 0.01f && moveVector.x > 0.01f) {
 				//moveVector.x = -0.0f;
-				camera.cameraPos.x = (float)block.x - (BLOCK_WIDTH / 2.0f + camera.playerWidth / 2.0f);
+				camera.pos.x = (float)block.x - (BLOCK_WIDTH / 2.0f + camera.playerWidth / 2.0f);
 			}
 		}
 
-		camera.cameraPos.z += moveVector.z * deltaTime;
+		camera.pos.z += moveVector.z * deltaTime;
 		norms_and_blocks = get_all_collision_norms(camera, world);
 
 		for (const auto &[norm, block] : norms_and_blocks) {
 			// block is -z and moving -z
 			if (norm.z < -0.01f && moveVector.z < -0.01f) {
 				//moveVector.z = 0;
-				camera.cameraPos.z = (float)block.z + (BLOCK_WIDTH / 2.0f + camera.playerWidth / 2.0f);
+				camera.pos.z = (float)block.z + (BLOCK_WIDTH / 2.0f + camera.playerWidth / 2.0f);
 			}
 			// block is +z and moving +z
 			else if (norm.z > 0.01f && moveVector.z > 0.01f) {
 				//moveVector.z = 0;
-				camera.cameraPos.z = (float)block.z - (BLOCK_WIDTH / 2.0f + camera.playerWidth / 2.0f);
+				camera.pos.z = (float)block.z - (BLOCK_WIDTH / 2.0f + camera.playerWidth / 2.0f);
 			}
 		}
 		camera.shouldJump = false;
 		// std::cout << "postcalc:\n";
-		// std::cout << "x: " << camera.cameraPos.x << "\n";
-		// std::cout << "y: " << camera.cameraPos.y << "\n";
-		// std::cout << "z: " << camera.cameraPos.z << std::endl;
+		// std::cout << "x: " << camera.pos.x << "\n";
+		// std::cout << "y: " << camera.pos.y << "\n";
+		// std::cout << "z: " << camera.pos.z << std::endl;
 	}
 
 	std::vector<std::pair<glm::vec3, BlockCoords>> get_all_collision_norms(CameraData &camera, WorldData &world)
 	{
 		// p[xyz] -> player [xyz]
-		int px = std::round(camera.cameraPos.x);
-		int py = std::round(camera.cameraPos.y);
-		int pz = std::round(camera.cameraPos.z);
+		int px = std::round(camera.pos.x);
+		int py = std::round(camera.pos.y);
+		int pz = std::round(camera.pos.z);
 		
 		std::vector<std::pair<glm::vec3, BlockCoords>> res;
-		AABB player_box = make_player_aabb(camera.cameraPos, camera.playerWidth, camera.playerHeight, camera.playerHeightOffset);
+		AABB player_box = make_player_aabb(camera.pos, camera.playerWidth, camera.playerHeight, camera.playerHeightOffset);
 		// loop over three by three area around player
 		for (int bz = pz - 1; bz <= pz + 1; ++bz) {
 			for (int by = py - 3; by <= py + 1; ++by) { // TODO: make 3 dependent on player height
@@ -253,13 +253,13 @@ namespace Camera
 		float z_low  = aabb.min.z;
 		float z_high = aabb.max.z;
 
-		float o_x = camera.cameraPos.x;
-		float o_y = camera.cameraPos.y;
-		float o_z = camera.cameraPos.z;
+		float o_x = camera.pos.x;
+		float o_y = camera.pos.y;
+		float o_z = camera.pos.z;
 
-		float r_x = camera.cameraDir.x;
-		float r_y = camera.cameraDir.y;
-		float r_z = camera.cameraDir.z;
+		float r_x = camera.dir.x;
+		float r_y = camera.dir.y;
+		float r_z = camera.dir.z;
 
 		float t_x_low  = (x_low  - o_x) / r_x;
 		float t_x_high = (x_high - o_x) / r_x;

@@ -14,9 +14,9 @@ namespace Engine
 	{
 		CameraData *camera = state.camera;
 
-		glm::mat4 view = glm::lookAt(camera->cameraPos,
-									 camera->cameraPos + camera->cameraDir,
-									 camera->cameraUp);
+		glm::mat4 view = glm::lookAt(camera->pos,
+									 camera->pos + camera->dir,
+									 camera->up);
 
 		Shader::setMat4(state.render->shaderID, "view", view);
 	}
