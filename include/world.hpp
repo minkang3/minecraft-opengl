@@ -1,12 +1,18 @@
 #pragma once
 
-#include <block_renderer.hpp>
+#include <render.hpp>
 #include <block.hpp>
 #include <cstdint>
 #include <vector>
 #include <string>
 #include <iostream>
 
+// struct WorldData
+// {
+// 	std::vector<BlockID> blocks;
+// 	int xmin, ymin, zmin;
+// 	int xsize, ysize, zsize;
+// };
 
 class World
 {
@@ -42,20 +48,20 @@ public:
 		return blocks[ (x - xmin) + (y - ymin) * xsize + (z - zmin) * xsize * ysize ];
 	}
 
-	void draw(BlockRenderer &renderer)
+	void draw(BlockRender &render)
 	{
 		for (int z = zmin; z < zmin + zsize; ++z) {
 			for (int y = ymin; y < ymin + ysize; ++y) {
 				for (int x = xmin; x < xmin + xsize; ++x) {
 					if ((*this)(x, y, z) == BlockID::GRASS) {
-						renderer.set_texture(BlockID::GRASS);
-						renderer.draw(x, y, z);
+						Render::set_texture(render, BlockID::GRASS);
+						Render::draw(render, x, y, z);
 					} else if ((*this)(x, y, z) == BlockID::STONE) {
-						renderer.set_texture(BlockID::STONE);
-						renderer.draw(x, y, z);
+						Render::set_texture(render, BlockID::STONE);
+						Render::draw(render, x, y, z);
 					} else if ((*this)(x, y, z) == BlockID::DIRT) {
-						renderer.set_texture(BlockID::DIRT);
-						renderer.draw(x, y, z);
+						Render::set_texture(render, BlockID::DIRT);
+						Render::draw(render, x, y, z);
 					}
 				}
 			}

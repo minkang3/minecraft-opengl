@@ -7,7 +7,7 @@
 
 namespace Shader
 {
-    int init(EngineState &state, const char *vertexPath, const char *fragmentPath)
+    int init(ShaderID &shaderID)
 	{
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
@@ -20,8 +20,8 @@ namespace Shader
         try 
         {
             // open files
-            vShaderFile.open(vertexPath);
-            fShaderFile.open(fragmentPath);
+            vShaderFile.open(VERTEX_PATH);
+            fShaderFile.open(FRAGMENT_PATH);
             std::stringstream vShaderStream, fShaderStream;
             // read file's buffer contents into streams
             vShaderStream << vShaderFile.rdbuf();
@@ -62,7 +62,7 @@ namespace Shader
         glDeleteShader(vertex);
         glDeleteShader(fragment);
 
-		state.shaderID = ID;
+		shaderID = ID;
 
 		return 0;
     }

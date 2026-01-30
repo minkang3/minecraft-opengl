@@ -8,5 +8,4 @@ typedef unsigned int ShaderID;
 struct EngineState
 {
 	GLFWwindow *window;
-	ShaderID shaderID;
 };

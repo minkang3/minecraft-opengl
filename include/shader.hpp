@@ -10,9 +10,12 @@
 #include <sstream>
 #include <iostream>
 
+#define VERTEX_PATH "shaders/shader.vs"
+#define FRAGMENT_PATH "shaders/shader.fs"
+
 namespace Shader
 {
-    int init(EngineState &state, const char *vertexPath, const char *fragmentPath);
+    int init(ShaderID &shaderID);
     void use(ShaderID ID);
     void setBool(ShaderID ID, const std::string &name, bool value);
     void setInt(ShaderID ID, const std::string &name, int value);

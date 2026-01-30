@@ -12,7 +12,7 @@
 #include <game_engine.hpp>
 #include <window.hpp>
 #include <shader.hpp>
-#include <block_renderer.hpp>
+#include <render.hpp>
 #include <camera.hpp>
 #include <world.hpp>
 #include <collision.hpp>
@@ -20,7 +20,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-GLFWwindow *init();
 void framebuffer_size_cb(GLFWwindow *window, int width, int height);
 void mouse_cb(GLFWwindow *window, double x, double y);
 void processInput(GLFWwindow *window);
@@ -36,14 +35,11 @@ double lastY;
 
 int main()
 {
-	 EngineState state = { 0 };
-	 Window::init(state);
-	 Shader::init(state, "shaders/shader.vs", "shaders/shader.fs");
+	 EngineState state  = { 0 };
+	 BlockRender render = { 0 };
 
-	 BlockRenderer block_renderer(state.shaderID);
-	 block_renderer.init_texture(BlockID::GRASS, "assets/grass.png");
-	 block_renderer.init_texture(BlockID::STONE, "assets/stone.png");
-	 block_renderer.init_texture(BlockID::DIRT, "assets/dirt.png");
+	 Window::init(state);
+	 Render::init(render);
 
 	 World world(-20, 20, -5, 5, -20, 20);
 
@@ -57,12 +53,12 @@ int main()
 
 	 world.place(BlockID::STONE, -5, 1, 0);
 
-	 Shader::use(state.shaderID);
+	 Shader::use(render.shaderID);
 	 
 	 glm::mat4 projection = glm::mat4(1.0f);
 	 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-	 Shader::setMat4(state.shaderID, "projection", projection);
+	 Shader::setMat4(render.shaderID, "projection", projection);
 
 	 while (!glfwWindowShouldClose(state.window)) {
 		  deltaTime = (float)glfwGetTime() - lastTime;
@@ -71,14 +67,14 @@ int main()
 		  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		  glClear(GL_COLOR_BUFFER_BIT);
 
-		  world.draw(block_renderer);
+		  world.draw(render);
 
 		  camera.reset_move();
 		  processInput(state.window);
 		  camera.fall(world, deltaTime);
 		  camera.move(deltaTime, world);
 		  camera.update();
-		  Shader::setMat4(state.shaderID, "view", camera.get_view());
+		  Shader::setMat4(render.shaderID, "view", camera.get_view());
 
 		  glfwSwapBuffers(state.window);
 		  glfwPollEvents();
