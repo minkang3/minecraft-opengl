@@ -7,12 +7,21 @@
 #include <string>
 #include <iostream>
 
-// struct WorldData
-// {
-// 	std::vector<BlockID> blocks;
-// 	int xmin, ymin, zmin;
-// 	int xsize, ysize, zsize;
-// };
+struct WorldData
+{
+	std::vector<BlockID> blocks;
+	int xmin, ymin, zmin;
+	int xsize, ysize, zsize;
+};
+
+namespace WorldNS
+{
+	int init();
+	BlockID& at(WorldData &world, int x, int y, int z);
+	void draw(WorldData &world, BlockRender &render);
+	void fill(WorldData &world, BlockID block_type, int xmin, int xmax, int ymin, int ymax, int zmin, int zmax);
+	void place(WorldData &world, BlockID block_type, int x, int y, int z);
+}
 
 class World
 {
