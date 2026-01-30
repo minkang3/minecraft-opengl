@@ -1,11 +1,11 @@
-#include <window_system.hpp>
+#include <window.hpp>
 
 #include <iostream>
 
 void framebuffer_size_cb(GLFWwindow *window, int width, int height);
 void mouse_cb(GLFWwindow *window, double x, double y);
 
-namespace WindowSystem
+namespace Window
 {
 	int init(EngineState &state)
 	{

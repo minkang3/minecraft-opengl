@@ -5,7 +5,7 @@
 
 #include <game_engine.hpp>
 
-namespace WindowSystem
+namespace Window
 {
 	int init(EngineState &state);
 }

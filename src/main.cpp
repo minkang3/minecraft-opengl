@@ -10,7 +10,7 @@
 #include <iostream>
 
 #include <game_engine.hpp>
-#include <window_system.hpp>
+#include <window.hpp>
 #include <shader.hpp>
 #include <block_renderer.hpp>
 #include <camera.hpp>
@@ -37,7 +37,7 @@ double lastY;
 int main()
 {
 	 EngineState state = { 0 };
-	 WindowSystem::init(state);
+	 Window::init(state);
 	 ShaderNS::init(state, "shaders/shader.vs", "shaders/shader.fs");
 
 	 BlockRenderer block_renderer(state.shaderID);
