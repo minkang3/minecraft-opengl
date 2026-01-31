@@ -71,7 +71,7 @@ namespace Window
 
 		if (rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
 			std::cout << "right click detected" << std::endl;
-			Camera::place_block(camera, world);
+			Camera::_place_block(camera, world);
 			rightClickFirst = false;
 		} else if (!rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
 			rightClickFirst = true;

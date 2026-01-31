@@ -159,11 +159,40 @@ namespace Camera
 
 
 
+	typedef BlockCoords ivec3;
+
+	void _place_block(CameraData &camera, WorldData &world)
+	{
+		RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, 5.0f); // make 5.0f into variable place_range
+
+		if (rayface.axis == Axis::INVALID && rayface.face == Face::INVALID) {
+			return;
+		}
+
+		BlockCoords new_coords = rayface.coords;
+		int delta = 1;
+		if (rayface.face == Face::LOW)
+			delta *= -1;
+
+		switch (rayface.axis) {
+		case Axis::X_AXIS:
+			new_coords.x += delta;
+			break;
+		case Axis::Z_AXIS:
+			new_coords.z += delta;
+			break;
+		case Axis::Y_AXIS:
+			new_coords.y += delta;
+			break;
+		}
+
+		World::at(world, new_coords.x, new_coords.y, new_coords.z) = BlockID::STONE;
+	}
+
 	void place_block(CameraData &camera, WorldData &world)
 	{
 		std::vector<std::pair<RayFace, BlockCoords>> rayfaces;
-		// need to draw a ray
-		// need to find which block it hits and what face
+
 		for (int z = world.zmin; z < world.zmin + world.zsize; ++z) {
 			for (int y = world.ymin; y < world.ymin + world.ysize; ++y) {
 				for (int x = world.xmin; x < world.xmin + world.xsize; ++x) {
@@ -172,11 +201,10 @@ namespace Camera
 					AABB aabb = Collision::make_block_aabb(x, y, z);
 					RayFace rayface = Collision::draw_ray_to_block(camera.pos, camera.dir, aabb);
 					if (rayface.axis == Axis::INVALID && rayface.face == Face::INVALID) {
-						//std::cout << "invalid" << std::endl;
 						continue;
 					}
 					BlockCoords coords = { x, y, z };
-					rayfaces.emplace_back(rayface, coords);
+					rayfaces.push_back({rayface, coords});
 				}
 			}
 		}

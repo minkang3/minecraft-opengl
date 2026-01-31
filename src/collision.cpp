@@ -118,9 +118,6 @@ namespace Collision
 		float t_z_low  = (z_low  - o_z) / r_z;
 		float t_z_high = (z_high - o_z) / r_z;
 
-		// float t_x_close = std::min(t_x_low, t_x_high);
-		// float t_x_far   = std::max(t_x_low, t_x_high);
-
 		float t_x_close, t_x_far;
 		Face t_x_close_sel;
 
@@ -179,15 +176,100 @@ namespace Collision
 		}
 		float t_far   = std::min(t_x_far, std::min(t_y_far, t_z_far));
 
-		//std::cout << "t_close: " << t_close << ", t_far: " << t_far << std::endl;
 		if (t_close > 0 && t_close < t_far) {
-			//std::cout << "branch 1" << std::endl;
-			return { t_close_axis, t_close_sel, t_close };
+			return { t_close_axis, t_close_sel, t_close, block_aabb_to_coords(aabb) };
 		}
 		else {
-			//std::cout << "branch 2" << std::endl;
-			return { Axis::INVALID, Face::INVALID, 0.0f };
+			return { Axis::INVALID, Face::INVALID, 0.0f, { 0, 0, 0 } };
 		}
+	}
+
+	BlockCoords vec3_to_coords(glm::vec3 v)
+	{
+		return {
+			static_cast<int>(std::round(v.x)),
+			static_cast<int>(std::round(v.y)),
+			static_cast<int>(std::round(v.z)),
+		};
+	}
+
+	typedef BlockCoords ivec3;
+
+	RayFace draw_ray_through_world(glm::vec3 o, glm::vec3 r, WorldData &world, float place_range)
+	{
+		// float place_range = 5.0f;
+
+		// glm::vec3 o = camera.pos;
+		// glm::vec3 r = camera.dir;
+		float t = 0.0f;
+
+		// printf("origin: (%f, %f, %f)\n", o.x, o.y, o.z);
+		// printf("ray: (%f, %f, %f)\n", r.x, r.y, r.z);
+
+		BlockCoords c = vec3_to_coords(o);
+
+		ivec3 step = { r.x >= 0.0f ? 1 : -1,
+					   r.y >= 0.0f ? 1 : -1,
+					   r.z >= 0.0f ? 1 : -1 };
+
+		// printf("step: (%d, %d, %d)\n", step.x, step.y, step.z);
+
+		while (t <= place_range) {
+			// printf("in loop t: %f\n", t);
+			// printf("checking c: (%d, %d, %d)\n", c.x, c.y, c.z);
+			if (World::at(world, c.x, c.y, c.z) != BlockID::NONE) {
+				RayFace rayface = Collision::draw_ray_to_block(o, r, Collision::make_block_aabb(c.x, c.y, c.z));
+
+				if (rayface.axis != Axis::INVALID && rayface.face != Face::INVALID) {
+					// TODO:
+					printf("Found: x: %d, y: %d, z: %d\n", c.x, c.y, c.z);
+					return rayface;
+				}
+			}
+
+			float target_x = c.x + (BLOCK_WIDTH / 2) * step.x;
+			float target_y = c.y + (BLOCK_WIDTH / 2) * step.y;
+			float target_z = c.z + (BLOCK_WIDTH / 2) * step.z;
+
+			// printf("target_x: %f\n", target_x);
+			// printf("target_y: %f\n", target_y);
+			// printf("target_z: %f\n", target_z);
+
+			float t_x = (target_x  - o.x) / r.x;
+			float t_y = (target_y  - o.y) / r.y;
+			float t_z = (target_z  - o.z) / r.z;
+
+			// printf("t_x: %f\n", t_x);
+			// printf("t_y: %f\n", t_y);
+			// printf("t_z: %f\n", t_z);
+			
+			if (t_x < t_y && t_x < t_z) {
+				c.x += step.x;
+				t = t_x;
+			} else if (t_y < t_z) {
+				c.y += step.y;
+				t = t_y;
+			} else {
+				c.z += step.z;
+				t = t_z;
+			}
+			if (t > place_range) {
+				printf("out of range\n");
+				return {};
+			}
+		}
+
+		return { Axis::INVALID, Face::INVALID, 0.0f, { 0, 0, 0 } };
+
+	}
+
+	BlockCoords block_aabb_to_coords(AABB aabb)
+	{
+		int x = std::round((aabb.min.x + aabb.max.x) / 2);
+		int y = std::round((aabb.min.y + aabb.max.y) / 2);
+		int z = std::round((aabb.min.z + aabb.max.z) / 2);
+
+		return { x, y, z };
 	}
 }
 
