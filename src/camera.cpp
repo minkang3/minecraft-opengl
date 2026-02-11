@@ -22,6 +22,8 @@ namespace Camera
 		camera.playerHeight = DEFAULT_PLAYER_HEIGHT;
 		camera.playerHeightOffset = DEFAULT_PLAYER_HEIGHT_OFFSET;
 
+		camera.selected_block = BlockID::GRASS;
+
 		return 0;
 	}
 
@@ -184,7 +186,7 @@ namespace Camera
 			break;
 		}
 
-		World::at(world, new_coords.x, new_coords.y, new_coords.z) = BlockID::STONE;
+		World::at(world, new_coords.x, new_coords.y, new_coords.z) = camera.selected_block;
 	}
 
 	void break_block(CameraData &camera, WorldData &world)

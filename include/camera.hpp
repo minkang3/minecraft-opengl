@@ -2,6 +2,7 @@
 
 #include <shader.hpp>
 #include <world.hpp>
+#include <block.hpp>
 
 #include <iostream>
 #include <cmath>
@@ -40,6 +41,8 @@ struct CameraData
 	float playerWidth;
 	float playerHeight;
 	float playerHeightOffset;
+
+	BlockID selected_block;
 };
 
 namespace Camera

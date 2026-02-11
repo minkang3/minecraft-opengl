@@ -93,6 +93,25 @@ namespace Window
 		// if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		// 	  Camera::move_vert(camera, -1, deltaTime);
 
+		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+			camera.selected_block = static_cast<BlockID>(1);
+		if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+			camera.selected_block = static_cast<BlockID>(2);
+		if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+			camera.selected_block = static_cast<BlockID>(3);
+		if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+			camera.selected_block = static_cast<BlockID>(4);
+		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+			camera.selected_block = static_cast<BlockID>(5);
+		if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+			camera.selected_block = static_cast<BlockID>(6);
+		if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
+			camera.selected_block = static_cast<BlockID>(7);
+		if (glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS)
+			camera.selected_block = static_cast<BlockID>(8);
+		if (glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS)
+			camera.selected_block = static_cast<BlockID>(9);
+
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS ||
 			glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
