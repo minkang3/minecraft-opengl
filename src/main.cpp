@@ -36,7 +36,7 @@ int main()
 	 Window::init(window);
 	 Shader::init(render.shaderID);
 	 Render::init(render);
-	 World ::init(world, -20, 20, -5, 5, -20, 20);
+	 World ::init(world, -20, 20, -5, 10, -20, 20);
 	 Camera::init(camera);
 
 	 glfwSetWindowUserPointer(window.handle, &state);
@@ -49,10 +49,10 @@ int main()
 
 		  Window::process_input(window.handle, camera, world);
 		  Camera::update(camera, world, state.timestamp_delta);
-		  Camera::draw_wire(camera, world, render);
 		  Engine::update_view_matrix(state);
 
 		  World::draw(world, render);
+		  Camera::draw_wire(camera, world, render);
 
 		  glfwSwapBuffers(window.handle);
 		  glfwPollEvents();

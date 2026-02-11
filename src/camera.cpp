@@ -10,6 +10,8 @@ namespace Camera
 		camera.dir = glm::vec3(0.0f, 0.0f, -1.0f);
 		camera.up  = glm::vec3(0.0f, 1.0f, 0.0f);
 
+		camera.range = DEFAULT_RANGE;
+
 		camera.speed = DEFAULT_SPEED;
 		camera.fallSpeed = 0.0f;
 		camera.fallAccel = 20.0f;
@@ -159,7 +161,7 @@ namespace Camera
 
 	void place_block(CameraData &camera, WorldData &world)
 	{
-		RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, 5.0f); // TODO: make 5.0f into variable place_range
+		RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, camera.range);
 
 		if (rayface.axis == Axis::INVALID && rayface.face == Face::INVALID) {
 			return;
@@ -194,7 +196,7 @@ namespace Camera
 
 	void draw_wire(CameraData &camera, WorldData &world, BlockRender &render)
 	{
-		RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, 5.0f); // TODO: make 5.0f into variable place_range
+		RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, camera.range);
 
 		if (rayface.axis == Axis::INVALID && rayface.face == Face::INVALID) {
 			return;

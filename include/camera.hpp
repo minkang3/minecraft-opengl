@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cmath>
 
+const float DEFAULT_RANGE = 5.0f;
 const float DEFAULT_SPEED = 5.0f;
 const float DEFAULT_PLAYER_WIDTH = 0.7f;
 const float DEFAULT_PLAYER_HEIGHT = 1.9f;
@@ -19,9 +20,6 @@ enum CameraDir {
 	NONE
 };
 
-
-
-
 struct CameraData
 {
 	glm::vec3 pos;
@@ -30,6 +28,8 @@ struct CameraData
 
 	float yaw;
 	float pitch;
+
+	float range;
 
 	float speed;
 	float fallSpeed;
