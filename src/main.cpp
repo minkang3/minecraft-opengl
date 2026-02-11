@@ -34,7 +34,8 @@ int main()
 	 state.render = &render;
 
 	 Window::init(window);
-	 Shader::init(render.shaderID);
+	 Shader::init(render.shaderID, "shaders/shader.vs", "shaders/shader.fs");
+	 Shader::init(render.crosshairShaderID, "shaders/crosshair.vs", "shaders/crosshair.fs");
 	 Render::init(render);
 	 World ::init(world, -20, 20, -5, 10, -20, 20);
 	 Camera::init(camera);
@@ -43,6 +44,8 @@ int main()
 
 	 while (!glfwWindowShouldClose(window.handle)) {
 		  Engine::update_timedata(state);
+
+		  Shader::use(render.shaderID);
 
 		  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		  glClear(GL_COLOR_BUFFER_BIT);
@@ -53,6 +56,8 @@ int main()
 
 		  World::draw(world, render);
 		  Camera::draw_wire(camera, world, render);
+
+		  Render::draw_crosshair(render);
 
 		  glfwSwapBuffers(window.handle);
 		  glfwPollEvents();

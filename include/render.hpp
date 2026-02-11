@@ -21,9 +21,11 @@ typedef unsigned int textureID;
 
 struct BlockRender
 {
-	ShaderID shaderID = SHADER_ID_UNINIT;
+	ShaderID shaderID          = SHADER_ID_UNINIT;
+	ShaderID crosshairShaderID = SHADER_ID_UNINIT;
 	unsigned int blockVAO;
 	unsigned int wireVAO;
+	unsigned int crosshairVAO;
 	std::unordered_map<BlockID, textureID> texture_map;
 };
 
@@ -32,9 +34,11 @@ namespace Render
 	int init(BlockRender &render);
 	int init_block_render(BlockRender &render);
 	int init_wire_render(BlockRender &render);
+	void init_crosshair(BlockRender &render);
 	void init_textures(BlockRender &render);
 	void init_texture(BlockRender &render, BlockID block_id, std::string file_path);
 	bool set_texture(BlockRender &render, BlockID block_id);
 	void draw_block(BlockRender &render, int posX, int posY, int posZ);
 	void draw_wire(BlockRender &render, int posX, int posY, int posZ);
+	void draw_crosshair(BlockRender &render);
 }

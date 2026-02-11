@@ -2,11 +2,13 @@
 ** DONE Block breaking
 - State "DONE"       from "IN-PROGRESS" [2026-02-11 Wed 22:16]
 ** DONE select which block to be able to place
+** DONE Crosshair
+- State "DONE"       from              [2026-02-11 Wed 23:16]
 ** TODO gui to see which place you will place
 ** TODO Shifting
 ** TODO Sprinting
-** TODO Crosshair
 ** TODO Inventory
 ** TODO Health
 ** TODO World saving/loading
 ** TODO Hand
+** TODO Fix flickering of block wire

@@ -15,8 +15,9 @@
 
 namespace Shader
 {
-    int init(ShaderID &shaderID);
+    int init(ShaderID &shaderID, std::string vertex_path, std::string fragment_path);
     int set_projection_mat(ShaderID ID);
+    void set_projection_mat_to_identity(ShaderID ID);
     void use(ShaderID ID);
     void setBool(ShaderID ID, const std::string &name, bool value);
     void setInt(ShaderID ID, const std::string &name, int value);

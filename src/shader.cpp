@@ -10,7 +10,7 @@
 
 namespace Shader
 {
-    int init(ShaderID &shaderID)
+    int init(ShaderID &shaderID, std::string vertex_path, std::string fragment_path)
 	{
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
@@ -23,8 +23,8 @@ namespace Shader
         try 
         {
             // open files
-            vShaderFile.open(VERTEX_PATH);
-            fShaderFile.open(FRAGMENT_PATH);
+            vShaderFile.open(vertex_path);
+            fShaderFile.open(fragment_path);
             std::stringstream vShaderStream, fShaderStream;
             // read file's buffer contents into streams
             vShaderStream << vShaderFile.rdbuf();

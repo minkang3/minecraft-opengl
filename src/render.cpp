@@ -2,6 +2,7 @@
 #include <cassert>
 
 #include <wire_verticies.hpp>
+#include <crosshair_verticies.hpp>
 
 #include <shader.hpp>
 
@@ -13,6 +14,7 @@ namespace Render
 
 		init_block_render(render);
 		init_wire_render(render);
+		init_crosshair(render);
 		init_textures(render);
 
 		return 0;
@@ -56,6 +58,23 @@ namespace Render
 
 		render.wireVAO = VAO;
 		return 0;
+	}
+
+	void init_crosshair(BlockRender &render)
+	{
+		unsigned int VAO, VBO;
+		glGenVertexArrays(1, &VAO);
+
+		glGenBuffers(1, &VBO);
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(crosshair_verticies), crosshair_verticies, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		render.crosshairVAO = VAO;
 	}
 
 	void init_textures(BlockRender &render)
@@ -138,5 +157,12 @@ namespace Render
 		glBindVertexArray(render.wireVAO);
 		glLineWidth(8.0f);
 		glDrawArrays(GL_TRIANGLES, 0, 6*24);
+	}
+
+	void draw_crosshair(BlockRender &render)
+	{
+		Shader::use(render.crosshairShaderID);
+		glBindVertexArray(render.crosshairVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 12);
 	}
 }
