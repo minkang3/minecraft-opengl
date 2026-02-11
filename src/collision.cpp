@@ -223,7 +223,7 @@ namespace Collision
 
 				if (rayface.axis != Axis::INVALID && rayface.face != Face::INVALID) {
 					// TODO:
-					printf("Found: x: %d, y: %d, z: %d\n", c.x, c.y, c.z);
+					//printf("Found: x: %d, y: %d, z: %d\n", c.x, c.y, c.z);
 					return rayface;
 				}
 			}
@@ -255,7 +255,7 @@ namespace Collision
 				t = t_z;
 			}
 			if (t > place_range) {
-				printf("out of range\n");
+				//printf("out of range\n");
 				return {};
 			}
 		}
