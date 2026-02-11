@@ -9,6 +9,14 @@ namespace Render
 	{
 		assert(render.shaderID != SHADER_ID_UNINIT && "Shader must be initialized before renderer");
 
+		init_block_render(render);
+		init_textures(render);
+
+		return 0;
+	}
+
+	int init_block_render(BlockRender &render)
+	{
 		unsigned int VAO, VBO;
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
@@ -23,11 +31,224 @@ namespace Render
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
 
-		render.VAO = VAO;
-		render.VBO = VBO;
+		render.blockVAO = VAO;
 
-		init_textures(render);
+		return 0;
+	}
 
+	int init_wire_render(BlockRender &render)
+	{
+		unsigned int VAO, VBO;
+		const float LINE_THICKNESS = 0.005f;
+
+		float verticies[] = {
+			// top front
+			0.5f, 0.5f, 0.5f,
+			-0.5f, 0.5f, 0.5f,
+			-0.5f, 0.5f, 0.5f - LINE_THICKNESS,
+			-0.5f, 0.5f, 0.5f - LINE_THICKNESS,
+			0.5f, 0.5f, 0.5f - LINE_THICKNESS,
+			0.5f, 0.5f, 0.5f,
+		  
+			// top left
+			-0.5f, 0.5f, 0.5f,
+			-0.5f, 0.5f, -0.5f,
+			-0.5f + LINE_THICKNESS, 0.5f, -0.5f,
+			-0.5f + LINE_THICKNESS, 0.5f, -0.5f,
+			-0.5f + LINE_THICKNESS, 0.5f, 0.5f,
+			-0.5f, 0.5f, 0.5f,
+
+			// top back
+			-0.5f, 0.5f, -0.5f,
+			0.5f, 0.5f, -0.5f,
+			0.5f, 0.5f, -0.5 + LINE_THICKNESS,
+			0.5f, 0.5f, -0.5 + LINE_THICKNESS,
+			-0.5f, 0.5f, -0.5 + LINE_THICKNESS,
+			-0.5f, 0.5f, -0.5f,
+
+			// top right
+			0.5f, 0.5f, -0.5f,
+			0.5f, 0.5f, 0.5f,
+			0.5f - LINE_THICKNESS, 0.5f, 0.5f,
+			0.5f - LINE_THICKNESS, 0.5f, 0.5f,
+			0.5f - LINE_THICKNESS, 0.5f, -0.5f,
+			0.5f, 0.5f, -0.5f,
+
+			// front top
+			0.5f, 0.5f, 0.5f,
+			-0.5f, 0.5f, 0.5f,
+			-0.5f, 0.5f - LINE_THICKNESS, 0.5f,
+			-0.5f, 0.5f - LINE_THICKNESS, 0.5f,
+			0.5f, 0.5f - LINE_THICKNESS, 0.5f,
+			0.5f, 0.5f, 0.5f,
+
+			// front right
+			0.5f, 0.5f, 0.5f,
+			0.5f, -0.5f, 0.5f,
+			0.5f - LINE_THICKNESS, -0.5f, 0.5f,
+			0.5f - LINE_THICKNESS, -0.5f, 0.5f,
+			0.5f - LINE_THICKNESS, 0.5f, 0.5f,
+			0.5f, 0.5f, 0.5f,
+
+			// front bot
+			0.5f, -0.5f, 0.5f,
+			-0.5f, -0.5f, 0.5f,
+			-0.5f, -0.5f + LINE_THICKNESS, 0.5f,
+			-0.5f, -0.5f + LINE_THICKNESS, 0.5f,
+			0.5f, -0.5f + LINE_THICKNESS, 0.5f,
+			0.5f, -0.5f, 0.5f,
+
+			// front left
+			-0.5f, -0.5f, 0.5f,
+			-0.5f, 0.5f, 0.5f,
+			-0.5f + LINE_THICKNESS, 0.5f, 0.5f,
+			-0.5f + LINE_THICKNESS, 0.5f, 0.5f,
+			-0.5f + LINE_THICKNESS, -0.5f, 0.5f,
+			-0.5f, -0.5f, 0.5f,
+
+			// bot forward
+			0.5f, -0.5f, 0.5f,
+			-0.5f, -0.5f, 0.5f,
+			-0.5f, -0.5f, 0.5f - LINE_THICKNESS,
+			-0.5f, -0.5f, 0.5f - LINE_THICKNESS,
+			0.5f, -0.5f, 0.5f - LINE_THICKNESS,
+			0.5f, -0.5f, 0.5f,
+
+			// bot left
+			-0.5f, -0.5f, 0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f + LINE_THICKNESS, -0.5f, -0.5f,
+			-0.5f + LINE_THICKNESS, -0.5f, -0.5f,
+			-0.5f + LINE_THICKNESS, -0.5f, 0.5f,
+			-0.5f, -0.5f, 0.5f,
+
+			// bot back
+			-0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f, -0.5f - LINE_THICKNESS,
+			0.5f, -0.5f, -0.5f - LINE_THICKNESS,
+			-0.5f, -0.5f, -0.5f - LINE_THICKNESS,
+			-0.5f, -0.5f, -0.5f,
+
+			// bot right
+			0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f, 0.5f,
+			0.5f - LINE_THICKNESS, -0.5f, 0.5f,
+			0.5f - LINE_THICKNESS, -0.5f, 0.5f,
+			0.5f - LINE_THICKNESS, -0.5f, -0.5f,
+			0.5f, -0.5f, -0.5f,
+
+			// back top
+			-0.5f, 0.5f, -0.5f,
+			0.5f, 0.5f, -0.5f,
+			0.5f, 0.5f - LINE_THICKNESS, -0.5,
+			0.5f, 0.5f - LINE_THICKNESS, -0.5,
+			-0.5f, 0.5f - LINE_THICKNESS, -0.5,
+			-0.5f, 0.5f, -0.5f,
+
+			// back left
+			-0.5f, 0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f + LINE_THICKNESS, -0.5f, -0.5f,
+			-0.5f + LINE_THICKNESS, -0.5f, -0.5f,
+			-0.5f + LINE_THICKNESS, 0.5f, -0.5f,
+			-0.5f, 0.5f, -0.5f,
+
+			// back bot
+			-0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f + LINE_THICKNESS, -0.5f,
+			0.5f, -0.5f + LINE_THICKNESS, -0.5f,
+			-0.5f, -0.5f + LINE_THICKNESS, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+		  
+			// back right
+			0.5f, -0.5f, -0.5f,
+			0.5f, 0.5f, -0.5f,
+			0.5f - LINE_THICKNESS, 0.5f, -0.5f,
+			0.5f - LINE_THICKNESS, 0.5f, -0.5f,
+			0.5f - LINE_THICKNESS, -0.5f, -0.5f,
+			0.5f, -0.5f, -0.5f,
+
+			// left top
+			-0.5f, 0.5f, 0.5f,
+			-0.5f, 0.5f, -0.5f,
+			-0.5f, 0.5f - LINE_THICKNESS, -0.5f,
+			-0.5f, 0.5f - LINE_THICKNESS, -0.5f,
+			-0.5f, 0.5f - LINE_THICKNESS, 0.5f,
+			-0.5f, 0.5f, 0.5f,
+
+			// left bot
+			-0.5f, -0.5f, 0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f + LINE_THICKNESS, -0.5f,
+			-0.5f, -0.5f + LINE_THICKNESS, -0.5f,
+			-0.5f, -0.5f + LINE_THICKNESS, 0.5f,
+			-0.5f, -0.5f, 0.5f,
+
+			// left front
+			-0.5f, 0.5f, 0.5f,
+			-0.5f, -0.5f, 0.5f,
+			-0.5f, -0.5f, 0.5f - LINE_THICKNESS,
+			-0.5f, -0.5f, 0.5f - LINE_THICKNESS,
+			-0.5f, 0.5f, 0.5f - LINE_THICKNESS,
+			-0.5f, 0.5f, 0.5f,
+
+			// left back
+			-0.5f, 0.5f,  -0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f + LINE_THICKNESS,
+			-0.5f, -0.5f, -0.5f + LINE_THICKNESS,
+			-0.5f, 0.5f,  -0.5f + LINE_THICKNESS,
+			-0.5f, 0.5f,  -0.5f,
+
+			// right top
+			0.5f, 0.5f, 0.5f,
+			0.5f, 0.5f, -0.5f,
+			0.5f, 0.5f - LINE_THICKNESS, -0.5f,
+			0.5f, 0.5f - LINE_THICKNESS, -0.5f,
+			0.5f, 0.5f - LINE_THICKNESS, 0.5f,
+			0.5f, 0.5f, 0.5f,
+
+			// right bot
+			0.5f, -0.5f, 0.5f,
+			0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f + LINE_THICKNESS, -0.5f,
+			0.5f, -0.5f + LINE_THICKNESS, -0.5f,
+			0.5f, -0.5f + LINE_THICKNESS, 0.5f,
+			0.5f, -0.5f, 0.5f,
+
+			// right front
+			0.5f, 0.5f, 0.5f,
+			0.5f, -0.5f, 0.5f,
+			0.5f, -0.5f, 0.5f - LINE_THICKNESS,
+			0.5f, -0.5f, 0.5f - LINE_THICKNESS,
+			0.5f, 0.5f, 0.5f - LINE_THICKNESS,
+			0.5f, 0.5f, 0.5f,
+
+			// right back
+			0.5f, 0.5f,  -0.5f,
+			0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f, -0.5f + LINE_THICKNESS,
+			0.5f, -0.5f, -0.5f + LINE_THICKNESS,
+			0.5f, 0.5f,  -0.5f + LINE_THICKNESS,
+			0.5f, 0.5f,  -0.5f,
+
+
+		};
+
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		render.wireVAO = VAO;
 		return 0;
 	}
 
@@ -36,6 +257,7 @@ namespace Render
 		init_texture(render, BlockID::GRASS, "assets/grass.png");
 		init_texture(render, BlockID::STONE, "assets/stone.png");
 		init_texture(render, BlockID::DIRT, "assets/dirt.png");
+		init_texture(render, BlockID::WIRE, "assets/wire.png");
 
 		Shader::setInt(render.shaderID, "texture1", 0);
 	}
@@ -59,7 +281,6 @@ namespace Render
 		unsigned char *data = stbi_load(file_path.c_str(), &width, &height, &nrChannels, 0);
 
 		if (data) {
-			std::cout << "loaded\n";
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 		} else {
@@ -80,7 +301,7 @@ namespace Render
 		return true;
 	}
 
-	void draw(BlockRender &render, int posX, int posY, int posZ)
+	void draw_block(BlockRender &render, int posX, int posY, int posZ)
 	{
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::vec3 posVec = glm::vec3((float)posX, (float)posY, (float)posZ);
@@ -90,7 +311,9 @@ namespace Render
 		Shader::use(render.shaderID);
 		Shader::setMat4(render.shaderID, "model", model);
 
-		glBindVertexArray(render.VAO);
+		glBindVertexArray(render.blockVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
+
+	//void draw_wire(BlockRender &render, int posX, int posY, int posZ);
 }

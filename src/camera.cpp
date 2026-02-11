@@ -157,13 +157,9 @@ namespace Camera
 		// std::cout << "z: " << camera.pos.z << std::endl;
 	}
 
-
-
-	typedef BlockCoords ivec3;
-
-	void _place_block(CameraData &camera, WorldData &world)
+	void place_block(CameraData &camera, WorldData &world)
 	{
-		RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, 5.0f); // make 5.0f into variable place_range
+		RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, 5.0f); // TODO: make 5.0f into variable place_range
 
 		if (rayface.axis == Axis::INVALID && rayface.face == Face::INVALID) {
 			return;
@@ -189,61 +185,28 @@ namespace Camera
 		World::at(world, new_coords.x, new_coords.y, new_coords.z) = BlockID::STONE;
 	}
 
-	void place_block(CameraData &camera, WorldData &world)
+	void draw_grid(CameraData &camera, WorldData &world, BlockRender &render, unsigned int VAO)
 	{
-		std::vector<std::pair<RayFace, BlockCoords>> rayfaces;
+		RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, 5.0f); // TODO: make 5.0f into variable place_range
 
-		for (int z = world.zmin; z < world.zmin + world.zsize; ++z) {
-			for (int y = world.ymin; y < world.ymin + world.ysize; ++y) {
-				for (int x = world.xmin; x < world.xmin + world.xsize; ++x) {
-					if (World::at(world, x, y, z) == BlockID::NONE)
-						continue;
-					AABB aabb = Collision::make_block_aabb(x, y, z);
-					RayFace rayface = Collision::draw_ray_to_block(camera.pos, camera.dir, aabb);
-					if (rayface.axis == Axis::INVALID && rayface.face == Face::INVALID) {
-						continue;
-					}
-					BlockCoords coords = { x, y, z };
-					rayfaces.push_back({rayface, coords});
-				}
-			}
-		}
-
-		if (rayfaces.size() <= 0)
+		if (rayface.axis == Axis::INVALID && rayface.face == Face::INVALID) {
 			return;
-
-		RayFace closest_rayface;
-		BlockCoords closest_coords;
-		closest_rayface.t = 1.0f / 0.0f; // infinity
-		for (auto &[rayface, coords] : rayfaces) {
-			if (rayface.t <  closest_rayface.t) {
-				closest_rayface = rayface;
-				closest_coords = coords;
-			}
-		}
-		std::cout << "(" << closest_coords.x << ", " << closest_coords.y << ", " << closest_coords.z << ")" << std::endl;
-		std::cout << "axis: " << closest_rayface.axis << ", face: " << closest_rayface.face << "\n" << std::endl;
-
-		BlockCoords new_coords = closest_coords;
-		int delta = 1;
-		if (closest_rayface.face == Face::LOW)
-			delta *= -1;
-
-		switch (closest_rayface.axis) {
-		case Axis::X_AXIS:
-			new_coords.x += delta;
-			break;
-		case Axis::Z_AXIS:
-			new_coords.z += delta;
-			break;
-		case Axis::Y_AXIS:
-			new_coords.y += delta;
-			break;
 		}
 
-		World::at(world, new_coords.x, new_coords.y, new_coords.z) = BlockID::STONE;
+		const float SCALE_AMT = 0.0001f;
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::vec3 posVec = glm::vec3((float)rayface.coords.x,
+									 (float)rayface.coords.y,
+									 (float)rayface.coords.z);
 
-		std::cout << "new coords:" << std::endl;
-		std::cout << "(" << new_coords.x << ", " << new_coords.y << ", " << new_coords.z << ")" << std::endl;
+		model = glm::translate(model, posVec);
+		model = glm::scale(model, glm::vec3(1.0f + SCALE_AMT));
+
+		Shader::use(render.shaderID);
+		Shader::setMat4(render.shaderID, "model", model);
+
+		glBindVertexArray(VAO);
+		glLineWidth(8.0f);
+		glDrawArrays(GL_TRIANGLES, 0, 6*24);
 	}
 }

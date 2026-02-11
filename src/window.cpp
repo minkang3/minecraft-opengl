@@ -15,7 +15,7 @@ namespace Window
 		glfwWindowHintString(GLFW_WAYLAND_APP_ID, "opengl_window");
 
 		// create window
-		window.handle = glfwCreateWindow(800, 600, "opengl recreation", NULL, NULL);
+		window.handle = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "opengl recreation", NULL, NULL);
 		if (!window.handle) {
 			std::cout << "Failed to create window\n";
 			return -1;
@@ -25,7 +25,6 @@ namespace Window
 		glfwSetCursorPosCallback(window.handle, mouse_cb);
 		glfwSetInputMode(window.handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		if (glfwRawMouseMotionSupported()) {
-			std::cout << "setting raw mouse" << std::endl;
 			glfwSetInputMode(window.handle, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 		}
 
@@ -71,7 +70,7 @@ namespace Window
 
 		if (rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
 			std::cout << "right click detected" << std::endl;
-			Camera::_place_block(camera, world);
+			Camera::place_block(camera, world);
 			rightClickFirst = false;
 		} else if (!rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
 			rightClickFirst = true;

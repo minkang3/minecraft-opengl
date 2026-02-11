@@ -1,4 +1,5 @@
 #include <shader.hpp>
+#include <window.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -76,7 +77,7 @@ namespace Shader
         use(ID);
 	 
         glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(45.0f), static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT), 0.1f, 100.0f);
 
         setMat4(ID, "projection", projection);
 

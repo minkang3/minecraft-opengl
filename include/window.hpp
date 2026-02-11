@@ -6,6 +6,9 @@
 #include <camera.hpp>
 #include <world.hpp>
 
+#define WINDOW_WIDTH  (1600)
+#define WINDOW_HEIGHT (900)
+
 struct WindowData
 {
 	GLFWwindow *handle;

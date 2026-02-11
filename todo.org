@@ -1,0 +1,9 @@
+* Things I can add
+** TODO Block breaking
+** TODO Shifting
+** TODO Sprinting
+** TODO Crosshair
+** TODO Inventory
+** TODO Health
+** TODO World saving/loading
+** TODO Hand

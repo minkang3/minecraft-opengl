@@ -50,6 +50,6 @@ namespace Camera
 	void queue_horz_move(CameraData &camera, CameraDir dir);
 	glm::vec3 move_bitmap_to_move_v3(CameraData &camera);
 	void update_pos(CameraData &camera, WorldData &world, float deltaTime);
-	void _place_block(CameraData &camera, WorldData &world);
 	void place_block(CameraData &camera, WorldData &world);
+	void draw_grid(CameraData &camera, WorldData &world, BlockRender &render, unsigned int VAO);
 }

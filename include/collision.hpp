@@ -7,6 +7,8 @@
 
 #define BLOCK_WIDTH (1.0f)
 
+typedef BlockCoords ivec3;
+
 struct AABB
 {
 	glm::vec3 min;

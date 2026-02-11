@@ -65,13 +65,13 @@ public:
 				for (int x = xmin; x < xmin + xsize; ++x) {
 					if ((*this)(x, y, z) == BlockID::GRASS) {
 						Render::set_texture(render, BlockID::GRASS);
-						Render::draw(render, x, y, z);
+						Render::draw_block(render, x, y, z);
 					} else if ((*this)(x, y, z) == BlockID::STONE) {
 						Render::set_texture(render, BlockID::STONE);
-						Render::draw(render, x, y, z);
+						Render::draw_block(render, x, y, z);
 					} else if ((*this)(x, y, z) == BlockID::DIRT) {
 						Render::set_texture(render, BlockID::DIRT);
-						Render::draw(render, x, y, z);
+						Render::draw_block(render, x, y, z);
 					}
 				}
 			}

@@ -40,13 +40,13 @@ namespace World
 				for (int x = world.xmin; x < world.xmin + world.xsize; ++x) {
 					if (World::at(world, x, y, z) == BlockID::GRASS) {
 						Render::set_texture(render, BlockID::GRASS);
-						Render::draw(render, x, y, z);
+						Render::draw_block(render, x, y, z);
 					} else if (World::at(world, x, y, z) == BlockID::STONE) {
 						Render::set_texture(render, BlockID::STONE);
-						Render::draw(render, x, y, z);
+						Render::draw_block(render, x, y, z);
 					} else if (World::at(world, x, y, z) == BlockID::DIRT) {
 						Render::set_texture(render, BlockID::DIRT);
-						Render::draw(render, x, y, z);
+						Render::draw_block(render, x, y, z);
 					}
 				}
 			}

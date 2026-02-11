@@ -1,6 +1,7 @@
 #include <collision.hpp>
 
 
+
 namespace Collision
 {
 	AABB make_player_aabb(const glm::vec3 &camPos, float width, float height, float height_offset)
@@ -193,7 +194,7 @@ namespace Collision
 		};
 	}
 
-	typedef BlockCoords ivec3;
+	
 
 	RayFace draw_ray_through_world(glm::vec3 o, glm::vec3 r, WorldData &world, float place_range)
 	{
