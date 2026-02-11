@@ -47,7 +47,7 @@ int main()
 		  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		  glClear(GL_COLOR_BUFFER_BIT);
 
-		  Window::processInput(window.handle, camera, world);
+		  Window::process_input(window.handle, camera, world);
 		  Camera::update(camera, world, state.timestamp_delta);
 		  Engine::update_view_matrix(state);
 		  Camera::draw_grid(camera, world, render, render.wireVAO);

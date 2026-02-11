@@ -60,16 +60,11 @@ namespace Window
 		state->window->mouse_prev_ypos = y;
 	}
 
-	void processInput(GLFWwindow *window, CameraData &camera, WorldData &world)
+	void process_input(GLFWwindow *window, CameraData &camera, WorldData &world)
 	{
 		static bool rightClickFirst = true;
 
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS ||
-			glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-			glfwSetWindowShouldClose(window, true);
-
 		if (rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-			std::cout << "right click detected" << std::endl;
 			Camera::place_block(camera, world);
 			rightClickFirst = false;
 		} else if (!rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
@@ -84,15 +79,14 @@ namespace Window
 			Camera::queue_horz_move(camera, LEFT);
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 			Camera::queue_horz_move(camera, RIGHT);
-		// if (!(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) &&
-		// 	!(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) &&
-		// 	!(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) &&
-		// 	!(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS))
-		// 	Camera::move_horz(camera, NONE);
 		 
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 			camera.shouldJump = true;
 		// if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		// 	  Camera::move_vert(camera, -1, deltaTime);
+
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS ||
+			glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+			glfwSetWindowShouldClose(window, true);
 	}
 }

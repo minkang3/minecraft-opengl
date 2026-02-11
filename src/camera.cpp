@@ -185,6 +185,13 @@ namespace Camera
 		World::at(world, new_coords.x, new_coords.y, new_coords.z) = BlockID::STONE;
 	}
 
+	// void break_block(CameraData &camera, WorldData &world)
+	// {
+	// 	RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, 5.0f);
+
+		
+	// }
+
 	void draw_grid(CameraData &camera, WorldData &world, BlockRender &render, unsigned int VAO)
 	{
 		RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, 5.0f); // TODO: make 5.0f into variable place_range

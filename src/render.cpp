@@ -10,6 +10,7 @@ namespace Render
 		assert(render.shaderID != SHADER_ID_UNINIT && "Shader must be initialized before renderer");
 
 		init_block_render(render);
+		init_wire_render(render);
 		init_textures(render);
 
 		return 0;
@@ -257,7 +258,6 @@ namespace Render
 		init_texture(render, BlockID::GRASS, "assets/grass.png");
 		init_texture(render, BlockID::STONE, "assets/stone.png");
 		init_texture(render, BlockID::DIRT, "assets/dirt.png");
-		init_texture(render, BlockID::WIRE, "assets/wire.png");
 
 		Shader::setInt(render.shaderID, "texture1", 0);
 	}
