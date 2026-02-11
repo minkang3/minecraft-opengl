@@ -63,12 +63,20 @@ namespace Window
 	void process_input(GLFWwindow *window, CameraData &camera, WorldData &world)
 	{
 		static bool rightClickFirst = true;
+		static bool leftClickFirst  = true;
 
 		if (rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
 			Camera::place_block(camera, world);
 			rightClickFirst = false;
 		} else if (!rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
 			rightClickFirst = true;
+		}
+
+		if (leftClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+			Camera::break_block(camera, world);
+			leftClickFirst = false;
+		} else if (!leftClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+			leftClickFirst = true;
 		}
 	 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)

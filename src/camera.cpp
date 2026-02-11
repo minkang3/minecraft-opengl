@@ -187,12 +187,16 @@ namespace Camera
 		World::at(world, new_coords.x, new_coords.y, new_coords.z) = BlockID::STONE;
 	}
 
-	// void break_block(CameraData &camera, WorldData &world)
-	// {
-	// 	RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, 5.0f);
+	void break_block(CameraData &camera, WorldData &world)
+	{
+		RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, camera.range);
 
-		
-	// }
+		if (rayface.axis == Axis::INVALID && rayface.face == Face::INVALID) {
+			return;
+		}
+
+		World::at(world, rayface.coords.x, rayface.coords.y, rayface.coords.z) = BlockID::NONE;
+	}
 
 	void draw_wire(CameraData &camera, WorldData &world, BlockRender &render)
 	{

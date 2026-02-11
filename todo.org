@@ -1,5 +1,7 @@
 * Things I can add
 ** TODO Block breaking
+** TODO select which block to be able to place
+** TODO gui to see which place you will place
 ** TODO Shifting
 ** TODO Sprinting
 ** TODO Crosshair
