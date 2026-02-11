@@ -36,4 +36,5 @@ namespace Render
 	void init_texture(BlockRender &render, BlockID block_id, std::string file_path);
 	bool set_texture(BlockRender &render, BlockID block_id);
 	void draw_block(BlockRender &render, int posX, int posY, int posZ);
+	void draw_wire(BlockRender &render, int posX, int posY, int posZ);
 }

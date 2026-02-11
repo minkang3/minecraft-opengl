@@ -51,5 +51,5 @@ namespace Camera
 	glm::vec3 move_bitmap_to_move_v3(CameraData &camera);
 	void update_pos(CameraData &camera, WorldData &world, float deltaTime);
 	void place_block(CameraData &camera, WorldData &world);
-	void draw_grid(CameraData &camera, WorldData &world, BlockRender &render, unsigned int VAO);
+	void draw_wire(CameraData &camera, WorldData &world, BlockRender &render);
 }

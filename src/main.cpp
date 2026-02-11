@@ -49,8 +49,8 @@ int main()
 
 		  Window::process_input(window.handle, camera, world);
 		  Camera::update(camera, world, state.timestamp_delta);
+		  Camera::draw_wire(camera, world, render);
 		  Engine::update_view_matrix(state);
-		  Camera::draw_grid(camera, world, render, render.wireVAO);
 
 		  World::draw(world, render);
 

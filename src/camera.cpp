@@ -192,7 +192,7 @@ namespace Camera
 		
 	// }
 
-	void draw_grid(CameraData &camera, WorldData &world, BlockRender &render, unsigned int VAO)
+	void draw_wire(CameraData &camera, WorldData &world, BlockRender &render)
 	{
 		RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, 5.0f); // TODO: make 5.0f into variable place_range
 
@@ -200,20 +200,6 @@ namespace Camera
 			return;
 		}
 
-		const float SCALE_AMT = 0.0001f;
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::vec3 posVec = glm::vec3((float)rayface.coords.x,
-									 (float)rayface.coords.y,
-									 (float)rayface.coords.z);
-
-		model = glm::translate(model, posVec);
-		model = glm::scale(model, glm::vec3(1.0f + SCALE_AMT));
-
-		Shader::use(render.shaderID);
-		Shader::setMat4(render.shaderID, "model", model);
-
-		glBindVertexArray(VAO);
-		glLineWidth(8.0f);
-		glDrawArrays(GL_TRIANGLES, 0, 6*24);
+		Render::draw_wire(render, rayface.coords.x, rayface.coords.y, rayface.coords.z);
 	}
 }

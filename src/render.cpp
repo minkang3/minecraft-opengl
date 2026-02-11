@@ -315,5 +315,23 @@ namespace Render
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
-	//void draw_wire(BlockRender &render, int posX, int posY, int posZ);
+	void draw_wire(BlockRender &render, int posX, int posY, int posZ)
+	{
+		const float SCALE_AMT = 0.0001f;
+
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::vec3 posVec = glm::vec3((float)posX,
+									 (float)posY,
+									 (float)posZ);
+
+		model = glm::translate(model, posVec);
+		model = glm::scale(model, glm::vec3(1.0f + SCALE_AMT));
+
+		Shader::use(render.shaderID);
+		Shader::setMat4(render.shaderID, "model", model);
+
+		glBindVertexArray(render.wireVAO);
+		glLineWidth(8.0f);
+		glDrawArrays(GL_TRIANGLES, 0, 6*24);
+	}
 }
