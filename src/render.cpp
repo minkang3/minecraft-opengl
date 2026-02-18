@@ -3,8 +3,11 @@
 
 #include <wire_verticies.hpp>
 #include <crosshair_verticies.hpp>
+#include <hotbar_verticies.hpp>
 
 #include <shader.hpp>
+
+
 
 namespace Render
 {
@@ -15,7 +18,10 @@ namespace Render
 		init_block_render(render);
 		init_wire_render(render);
 		init_crosshair(render);
+		init_hotbar(render);
+
 		init_textures(render);
+		init_hotbar_texture(render, "assets/hotbar.png");
 
 		return 0;
 	}
@@ -77,6 +83,25 @@ namespace Render
 		render.crosshairVAO = VAO;
 	}
 
+	void init_hotbar(Renderer &render)
+	{
+		unsigned int VAO, VBO;
+		glGenVertexArrays(1, &VAO);
+
+		glGenBuffers(1, &VBO);
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(hotbar_verticies), hotbar_verticies, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+
+		render.hotbarVAO = VAO;
+	}
+
 	void init_textures(Renderer &render)
 	{
 		init_texture(render, BlockID::GRASS, "assets/grass.png");
@@ -113,6 +138,38 @@ namespace Render
 		stbi_image_free(data);
 
 		render.texture_map[block_id] = texture;
+	}
+
+	void init_hotbar_texture(Renderer &render, std::string file_path)
+	{
+		Shader::use(render.hotbarShaderID);
+
+		unsigned int texture;
+		// texture
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+
+		// set the texture wrapping parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		// set texture filtering parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		int width, height, nrChannels;
+		stbi_set_flip_vertically_on_load(true);
+		unsigned char *data = stbi_load(file_path.c_str(), &width, &height, &nrChannels, 0);
+
+		if (data) {
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		} else {
+			std::cout << "Failed to load image\n";
+		}
+		stbi_image_free(data);
+
+		Shader::setInt(render.shaderID, "texture1", 0);
+		render.hotbarTextureID = texture;
 	}
 
 	bool set_texture(Renderer &render, BlockID block_id)
@@ -164,5 +221,14 @@ namespace Render
 		Shader::use(render.crosshairShaderID);
 		glBindVertexArray(render.crosshairVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 12);
+	}
+
+	void draw_hotbar(Renderer &render)
+	{
+		Shader::use(render.hotbarShaderID);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, render.hotbarTextureID);
+		glBindVertexArray(render.hotbarVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 }

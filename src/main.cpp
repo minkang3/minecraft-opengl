@@ -25,7 +25,7 @@ int main()
 {
 	 EngineState state  = { };
 	 WindowData  window = { };
-	 Renderer render = { };
+	 Renderer    render = { };
 	 CameraData  camera = { };
 	 WorldData   world  = { };
 
@@ -36,11 +36,15 @@ int main()
 	 Window::init(window);
 	 Shader::init(render.shaderID, "shaders/shader.vs", "shaders/shader.fs");
 	 Shader::init(render.crosshairShaderID, "shaders/crosshair.vs", "shaders/crosshair.fs");
+	 Shader::init(render.hotbarShaderID, "shaders/hotbar.vs", "shaders/hotbar.fs");
 	 Render::init(render);
 	 World ::init(world, -20, 20, -5, 10, -20, 20);
 	 Camera::init(camera);
 
 	 glfwSetWindowUserPointer(window.handle, &state);
+
+	 glEnable(GL_BLEND);
+	 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	 while (!glfwWindowShouldClose(window.handle)) {
 		  Engine::update_timedata(state);
@@ -55,8 +59,9 @@ int main()
 		  Engine::update_view_matrix(state);
 
 		  World::draw(world, render);
-		  Camera::draw_wire(camera, world, render);
 
+		  Render::draw_hotbar(render);
+		  Camera::draw_wire(camera, world, render);
 		  Render::draw_crosshair(render);
 
 		  glfwSwapBuffers(window.handle);
