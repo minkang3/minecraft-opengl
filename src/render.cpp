@@ -141,7 +141,7 @@ namespace Render
 
 	void draw_wire(BlockRender &render, int posX, int posY, int posZ)
 	{
-		const float SCALE_AMT = 0.00001f;
+		const float SCALE_AMT = 0.0001f;
 
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::vec3 posVec = glm::vec3((float)posX,

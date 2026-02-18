@@ -1,4 +1,4 @@
-const float LINE_THICKNESS = 0.005f;
+const float LINE_THICKNESS = 0.007f;
 
 float wire_verticies[] = {
 	// top front

@@ -4,7 +4,7 @@
 ** DONE select which block to be able to place
 ** DONE Crosshair
 - State "DONE"       from              [2026-02-11 Wed 23:16]
-** TODO gui to see which place you will place
+** TODO gui to see which block you will place
 ** TODO Shifting
 ** TODO Sprinting
 ** TODO Inventory
