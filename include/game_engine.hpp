@@ -10,7 +10,7 @@ struct EngineState
 {
 	WindowData *window;
 	CameraData *camera;
-	BlockRender *render;
+	Renderer *render;
 
 	float timestamp_prev;
 	float timestamp_delta;

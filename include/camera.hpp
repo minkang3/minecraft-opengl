@@ -55,5 +55,5 @@ namespace Camera
 	void update_pos(CameraData &camera, WorldData &world, float deltaTime);
 	void place_block(CameraData &camera, WorldData &world);
 	void break_block(CameraData &camera, WorldData &world);
-	void draw_wire(CameraData &camera, WorldData &world, BlockRender &render);
+	void draw_wire(CameraData &camera, WorldData &world, Renderer &render);
 }

@@ -25,7 +25,7 @@ int main()
 {
 	 EngineState state  = { };
 	 WindowData  window = { };
-	 BlockRender render = { };
+	 Renderer render = { };
 	 CameraData  camera = { };
 	 WorldData   world  = { };
 

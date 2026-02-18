@@ -8,7 +8,7 @@
 
 namespace Render
 {
-	int init(BlockRender &render)
+	int init(Renderer &render)
 	{
 		assert(render.shaderID != SHADER_ID_UNINIT && "Shader must be initialized before renderer");
 
@@ -20,7 +20,7 @@ namespace Render
 		return 0;
 	}
 
-	int init_block_render(BlockRender &render)
+	int init_block_render(Renderer &render)
 	{
 		unsigned int VAO, VBO;
 		glGenVertexArrays(1, &VAO);
@@ -41,7 +41,7 @@ namespace Render
 		return 0;
 	}
 
-	int init_wire_render(BlockRender &render)
+	int init_wire_render(Renderer &render)
 	{
 		unsigned int VAO, VBO;
 
@@ -60,7 +60,7 @@ namespace Render
 		return 0;
 	}
 
-	void init_crosshair(BlockRender &render)
+	void init_crosshair(Renderer &render)
 	{
 		unsigned int VAO, VBO;
 		glGenVertexArrays(1, &VAO);
@@ -77,7 +77,7 @@ namespace Render
 		render.crosshairVAO = VAO;
 	}
 
-	void init_textures(BlockRender &render)
+	void init_textures(Renderer &render)
 	{
 		init_texture(render, BlockID::GRASS, "assets/grass.png");
 		init_texture(render, BlockID::STONE, "assets/stone.png");
@@ -86,7 +86,7 @@ namespace Render
 		Shader::setInt(render.shaderID, "texture1", 0);
 	}
 
-	void init_texture(BlockRender &render, BlockID block_id, std::string file_path)
+	void init_texture(Renderer &render, BlockID block_id, std::string file_path)
 	{
 		unsigned int texture;
 		// texture
@@ -115,7 +115,7 @@ namespace Render
 		render.texture_map[block_id] = texture;
 	}
 
-	bool set_texture(BlockRender &render, BlockID block_id)
+	bool set_texture(Renderer &render, BlockID block_id)
 	{
 		if (render.texture_map.find(block_id) == render.texture_map.end())
 			return false;
@@ -125,7 +125,7 @@ namespace Render
 		return true;
 	}
 
-	void draw_block(BlockRender &render, int posX, int posY, int posZ)
+	void draw_block(Renderer &render, int posX, int posY, int posZ)
 	{
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::vec3 posVec = glm::vec3((float)posX, (float)posY, (float)posZ);
@@ -139,7 +139,7 @@ namespace Render
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
-	void draw_wire(BlockRender &render, int posX, int posY, int posZ)
+	void draw_wire(Renderer &render, int posX, int posY, int posZ)
 	{
 		const float SCALE_AMT = 0.0001f;
 
@@ -159,7 +159,7 @@ namespace Render
 		glDrawArrays(GL_TRIANGLES, 0, 6*24);
 	}
 
-	void draw_crosshair(BlockRender &render)
+	void draw_crosshair(Renderer &render)
 	{
 		Shader::use(render.crosshairShaderID);
 		glBindVertexArray(render.crosshairVAO);

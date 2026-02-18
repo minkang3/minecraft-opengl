@@ -200,7 +200,7 @@ namespace Camera
 		World::at(world, rayface.coords.x, rayface.coords.y, rayface.coords.z) = BlockID::NONE;
 	}
 
-	void draw_wire(CameraData &camera, WorldData &world, BlockRender &render)
+	void draw_wire(CameraData &camera, WorldData &world, Renderer &render)
 	{
 		RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, camera.range);
 

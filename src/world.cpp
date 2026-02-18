@@ -33,7 +33,7 @@ namespace World
 							 (z - world.zmin) * world.xsize * world.ysize ];
 	}
 
-	void draw(WorldData &world, BlockRender &render)
+	void draw(WorldData &world, Renderer &render)
 	{
 		for (int z = world.zmin; z < world.zmin + world.zsize; ++z) {
 			for (int y = world.ymin; y < world.ymin + world.ysize; ++y) {

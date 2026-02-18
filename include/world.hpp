@@ -18,7 +18,7 @@ namespace World
 {
 	int init(WorldData &world, int xmin, int xmax, int ymin, int ymax, int zmin, int zmax);
 	BlockID& at(WorldData &world, int x, int y, int z);
-	void draw(WorldData &world, BlockRender &render);
+	void draw(WorldData &world, Renderer &render);
 	void fill(WorldData &world, BlockID block_type, int xmin, int xmax, int ymin, int ymax, int zmin, int zmax);
 	void place(WorldData &world, BlockID block_type, int x, int y, int z);
 }
@@ -58,7 +58,7 @@ public:
 		return blocks[ (x - xmin) + (y - ymin) * xsize + (z - zmin) * xsize * ysize ];
 	}
 
-	void draw(BlockRender &render)
+	void draw(Renderer &render)
 	{
 		for (int z = zmin; z < zmin + zsize; ++z) {
 			for (int y = ymin; y < ymin + ysize; ++y) {
