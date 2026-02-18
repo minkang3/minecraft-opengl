@@ -8,9 +8,9 @@
 #include <shader.hpp>
 
 
-
 namespace Render
 {
+    // * Init
 	int init(Renderer &render)
 	{
 		assert(render.shaderID != SHADER_ID_UNINIT && "Shader must be initialized before renderer");
@@ -26,6 +26,7 @@ namespace Render
 		return 0;
 	}
 
+    // * Block
 	int init_block_render(Renderer &render)
 	{
 		unsigned int VAO, VBO;
@@ -47,69 +48,6 @@ namespace Render
 		return 0;
 	}
 
-	int init_wire_render(Renderer &render)
-	{
-		unsigned int VAO, VBO;
-
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
-
-		glBindVertexArray(VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(wire_verticies), wire_verticies, GL_STATIC_DRAW);
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-
-		render.wireVAO = VAO;
-		return 0;
-	}
-
-	void init_crosshair(Renderer &render)
-	{
-		unsigned int VAO, VBO;
-		glGenVertexArrays(1, &VAO);
-
-		glGenBuffers(1, &VBO);
-		glBindVertexArray(VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(crosshair_verticies), crosshair_verticies, GL_STATIC_DRAW);
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-
-		render.crosshairVAO = VAO;
-	}
-
-	void init_hotbar(Renderer &render)
-	{
-		unsigned int VAO, VBO;
-		glGenVertexArrays(1, &VAO);
-
-		glGenBuffers(1, &VBO);
-		glBindVertexArray(VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(hotbar_verticies), hotbar_verticies, GL_STATIC_DRAW);
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);
-
-		render.hotbarVAO = VAO;
-	}
-
-	void init_textures(Renderer &render)
-	{
-		init_texture(render, BlockID::GRASS, "assets/grass.png");
-		init_texture(render, BlockID::STONE, "assets/stone.png");
-		init_texture(render, BlockID::DIRT, "assets/dirt.png");
-
-		Shader::setInt(render.shaderID, "texture1", 0);
-	}
 
 	void init_texture(Renderer &render, BlockID block_id, std::string file_path)
 	{
@@ -138,6 +76,124 @@ namespace Render
 		stbi_image_free(data);
 
 		render.texture_map[block_id] = texture;
+	}
+
+	void init_textures(Renderer &render)
+	{
+		init_texture(render, BlockID::GRASS, "assets/grass.png");
+		init_texture(render, BlockID::STONE, "assets/stone.png");
+		init_texture(render, BlockID::DIRT, "assets/dirt.png");
+
+		Shader::setInt(render.shaderID, "texture1", 0);
+	}
+
+	bool set_texture(Renderer &render, BlockID block_id)
+	{
+		if (render.texture_map.find(block_id) == render.texture_map.end())
+			return false;
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, render.texture_map[block_id]);
+		return true;
+	}
+
+	void draw_block(Renderer &render, int posX, int posY, int posZ)
+	{
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::vec3 posVec = glm::vec3((float)posX, (float)posY, (float)posZ);
+
+		model = glm::translate(model, posVec);
+
+		Shader::use(render.shaderID);
+		Shader::setMat4(render.shaderID, "model", model);
+
+		glBindVertexArray(render.blockVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
+
+	// * Wire
+	int init_wire_render(Renderer &render)
+	{
+		unsigned int VAO, VBO;
+
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(wire_verticies), wire_verticies, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		render.wireVAO = VAO;
+		return 0;
+	}
+
+	void draw_wire(Renderer &render, int posX, int posY, int posZ)
+	{
+		const float SCALE_AMT = 0.0001f;
+
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::vec3 posVec = glm::vec3((float)posX,
+									 (float)posY,
+									 (float)posZ);
+
+		model = glm::translate(model, posVec);
+		model = glm::scale(model, glm::vec3(1.0f + SCALE_AMT));
+
+		Shader::use(render.shaderID);
+		Shader::setMat4(render.shaderID, "model", model);
+
+		glBindVertexArray(render.wireVAO);
+		glLineWidth(8.0f);
+		glDrawArrays(GL_TRIANGLES, 0, 6*24);
+	}
+
+	// * Crosshair
+	void init_crosshair(Renderer &render)
+	{
+		unsigned int VAO, VBO;
+		glGenVertexArrays(1, &VAO);
+
+		glGenBuffers(1, &VBO);
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(crosshair_verticies), crosshair_verticies, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		render.crosshairVAO = VAO;
+	}
+
+	void draw_crosshair(Renderer &render)
+	{
+		Shader::use(render.crosshairShaderID);
+		glBindVertexArray(render.crosshairVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 12);
+	}
+
+	// * Hotbar
+	void init_hotbar(Renderer &render)
+	{
+		unsigned int VAO, VBO;
+		glGenVertexArrays(1, &VAO);
+
+		glGenBuffers(1, &VBO);
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(hotbar_verticies), hotbar_verticies, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+
+		render.hotbarVAO = VAO;
 	}
 
 	void init_hotbar_texture(Renderer &render, std::string file_path)
@@ -170,57 +226,6 @@ namespace Render
 
 		Shader::setInt(render.shaderID, "texture1", 0);
 		render.hotbarTextureID = texture;
-	}
-
-	bool set_texture(Renderer &render, BlockID block_id)
-	{
-		if (render.texture_map.find(block_id) == render.texture_map.end())
-			return false;
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, render.texture_map[block_id]);
-		return true;
-	}
-
-	void draw_block(Renderer &render, int posX, int posY, int posZ)
-	{
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::vec3 posVec = glm::vec3((float)posX, (float)posY, (float)posZ);
-
-		model = glm::translate(model, posVec);
-
-		Shader::use(render.shaderID);
-		Shader::setMat4(render.shaderID, "model", model);
-
-		glBindVertexArray(render.blockVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-	}
-
-	void draw_wire(Renderer &render, int posX, int posY, int posZ)
-	{
-		const float SCALE_AMT = 0.0001f;
-
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::vec3 posVec = glm::vec3((float)posX,
-									 (float)posY,
-									 (float)posZ);
-
-		model = glm::translate(model, posVec);
-		model = glm::scale(model, glm::vec3(1.0f + SCALE_AMT));
-
-		Shader::use(render.shaderID);
-		Shader::setMat4(render.shaderID, "model", model);
-
-		glBindVertexArray(render.wireVAO);
-		glLineWidth(8.0f);
-		glDrawArrays(GL_TRIANGLES, 0, 6*24);
-	}
-
-	void draw_crosshair(Renderer &render)
-	{
-		Shader::use(render.crosshairShaderID);
-		glBindVertexArray(render.crosshairVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 12);
 	}
 
 	void draw_hotbar(Renderer &render)
