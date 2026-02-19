@@ -61,6 +61,7 @@ int main()
 		  World::draw(world, render);
 
 		  Render::draw_hotbar(render);
+		  Render::draw_hotbar_selector(render, 1);
 		  Camera::draw_wire(camera, world, render);
 		  Render::draw_crosshair(render);
 

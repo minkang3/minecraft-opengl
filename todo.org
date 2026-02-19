@@ -30,3 +30,5 @@ I probably will have to have two separate shaders
 ** TODO Rename init_<texture> to init_<texture>_VAO
 ** TODO Rename init_textures to init_block_textures
 ** TODO make jump slightly less high so you don't hit block 3 blocks above
+** TODO make it so i don't have to call Shader::use in main loop
+** TODO refactor init_texture to only one function used many times

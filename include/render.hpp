@@ -29,8 +29,10 @@ struct Renderer
 	unsigned int wireVAO;
 	unsigned int crosshairVAO;
 	unsigned int hotbarVAO;
+	unsigned int hotbarSelectorVAO;
 
 	unsigned int hotbarTextureID;
+	unsigned int hotbarSelectorTextureID;
 
 	std::unordered_map<BlockID, textureID> texture_map;
 };
@@ -56,6 +58,9 @@ namespace Render
 
 	// Hotbar
 	void init_hotbar(Renderer &render);
+	void init_hotbar_selector(Renderer &render);
 	void init_hotbar_texture(Renderer &render, std::string file_path);
+	void init_hotbar_selector_texture(Renderer &render, std::string file_path);
 	void draw_hotbar(Renderer &render);
+	void draw_hotbar_selector(Renderer &render, unsigned int slot);
 }
