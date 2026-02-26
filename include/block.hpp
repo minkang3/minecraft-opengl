@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 enum class BlockID : std::uint8_t {
 	NONE  = 0,
 	GRASS = 1,

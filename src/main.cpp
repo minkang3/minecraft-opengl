@@ -16,6 +16,7 @@
 #include <camera.hpp>
 #include <world.hpp>
 #include <collision.hpp>
+#include <inventory.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -23,11 +24,12 @@
 
 int main()
 {
-	 EngineState state  = { };
-	 WindowData  window = { };
-	 Renderer    render = { };
-	 CameraData  camera = { };
-	 WorldData   world  = { };
+	 EngineState   state     = { };
+	 WindowData    window    = { };
+	 Renderer      render    = { };
+	 CameraData    camera    = { };
+	 WorldData     world     = { };
+	 InventoryData inventory = { };
 
 	 state.window = &window;
 	 state.camera = &camera;
@@ -37,9 +39,11 @@ int main()
 	 Shader::init(render.shaderID, "shaders/shader.vs", "shaders/shader.fs");
 	 Shader::init(render.crosshairShaderID, "shaders/crosshair.vs", "shaders/crosshair.fs");
 	 Shader::init(render.hotbarShaderID, "shaders/hotbar.vs", "shaders/hotbar.fs");
+	 Shader::init(render.item3dShaderID, "shaders/item3d.vs", "shaders/item3d.fs");
 	 Render::init(render);
 	 World ::init(world, -20, 20, -5, 10, -20, 20);
 	 Camera::init(camera);
+	 Inventory::init(inventory);
 
 	 glfwSetWindowUserPointer(window.handle, &state);
 
@@ -54,14 +58,15 @@ int main()
 		  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		  glClear(GL_COLOR_BUFFER_BIT);
 
-		  Window::process_input(window.handle, camera, world);
+		  Window::process_input(window.handle, camera, world, inventory);
 		  Camera::update(camera, world, state.timestamp_delta);
 		  Engine::update_view_matrix(state);
 
 		  World::draw(world, render);
 
 		  Render::draw_hotbar(render);
-		  Render::draw_hotbar_selector(render, 1);
+		  Inventory::draw_hotbar_items(inventory, render);
+		  Render::draw_hotbar_selector(render, inventory.hotbar_slot);
 		  Camera::draw_wire(camera, world, render);
 		  Render::draw_crosshair(render);
 

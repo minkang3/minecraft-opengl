@@ -20,6 +20,7 @@ namespace Render
 		init_crosshair(render);
 		init_hotbar(render);
 		init_hotbar_selector(render);
+		init_3d_hotbar_item(render);
 
 		init_textures(render);
 		init_hotbar_texture(render, "assets/hotbar.png");
@@ -299,12 +300,54 @@ namespace Render
 		Shader::use(render.hotbarShaderID);
 
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3((slot - 1) * hotbar_selector_width, 0.0f, 0.0f));
+		model = glm::translate(model, glm::vec3((slot - 1) * hotbar_slot_spacing, 0.0f, 0.0f));
 		Shader::setMat4(render.hotbarShaderID, "model", model);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, render.hotbarSelectorTextureID);
 		glBindVertexArray(render.hotbarSelectorVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+
+	// 3d items
+	void init_3d_hotbar_item(Renderer &render)
+	{
+		Shader::use(render.item3dShaderID);
+		Shader::set_projection_mat(render.item3dShaderID);
+
+		glm::mat4 model = glm::mat4(1.0f);
+
+		model = glm::scale(model, glm::vec3(0.2f));
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -5.0f));
+		model = glm::rotate(model, glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		glm::vec3 pos(0.0f, 0.0f, 5.0f);
+
+		glm::mat4 view = glm::lookAt(pos,
+									 pos + glm::vec3(0.0f, 0.0f, -1.0f),
+									 glm::vec3(0.0f, 1.0f, 0.0f));
+
+		Shader::setMat4(render.item3dShaderID, "model", model);
+		Shader::setMat4(render.item3dShaderID, "view", view);
+	}
+
+	void draw_3d_hotbar_item(Renderer &render, BlockID block_id, unsigned int slot)
+	{
+		Shader::use(render.item3dShaderID);
+
+		glm::mat4 translate = glm::mat4(1.0f);
+		translate = glm::translate(translate,
+								   glm::vec3(-(hotbar_slot_spacing * 4) + ((slot - 1) * hotbar_slot_spacing),
+											 -1.0 + hotbar_height / 2,
+											 -1.5f));
+
+		Shader::setMat4(render.item3dShaderID, "translate", translate);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, render.texture_map[block_id]);
+
+		glBindVertexArray(render.blockVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 }

@@ -60,13 +60,13 @@ namespace Window
 		state->window->mouse_prev_ypos = y;
 	}
 
-	void process_input(GLFWwindow *window, CameraData &camera, WorldData &world)
+	void process_input(GLFWwindow *window, CameraData &camera, WorldData &world, InventoryData &inventory)
 	{
 		static bool rightClickFirst = true;
 		static bool leftClickFirst  = true;
 
 		if (rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-			Camera::place_block(camera, world);
+			Inventory::place_block(inventory, camera, world);
 			rightClickFirst = false;
 		} else if (!rightClickFirst && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
 			rightClickFirst = true;
@@ -93,24 +93,33 @@ namespace Window
 		// if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		// 	  Camera::move_vert(camera, -1, deltaTime);
 
-		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-			camera.selected_block = static_cast<BlockID>(1);
-		if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-			camera.selected_block = static_cast<BlockID>(2);
-		if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
-			camera.selected_block = static_cast<BlockID>(3);
-		if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
-			camera.selected_block = static_cast<BlockID>(4);
-		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
-			camera.selected_block = static_cast<BlockID>(5);
-		if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
-			camera.selected_block = static_cast<BlockID>(6);
-		if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
-			camera.selected_block = static_cast<BlockID>(7);
-		if (glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS)
-			camera.selected_block = static_cast<BlockID>(8);
-		if (glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS)
-			camera.selected_block = static_cast<BlockID>(9);
+		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+			Inventory::hotbar_select_slot(inventory, 1);
+		}
+		if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+			Inventory::hotbar_select_slot(inventory, 2);
+		}
+		if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+			Inventory::hotbar_select_slot(inventory, 3);
+		}
+		if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
+			Inventory::hotbar_select_slot(inventory, 4);
+		}
+		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
+			Inventory::hotbar_select_slot(inventory, 5);
+		}
+		if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS) {
+			Inventory::hotbar_select_slot(inventory, 6);
+		}
+		if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS) {
+			Inventory::hotbar_select_slot(inventory, 7);
+		}
+		if (glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS) {
+			Inventory::hotbar_select_slot(inventory, 8);
+		}
+		if (glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS) {
+			Inventory::hotbar_select_slot(inventory, 9);
+		}
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS ||
 			glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)

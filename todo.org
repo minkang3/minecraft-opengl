@@ -6,7 +6,8 @@
 - State "DONE"       from              [2026-02-11 Wed 23:16]
 ** DONE Fix flickering of block wire
 - State "DONE"       from              [2026-02-18 Wed 21:23]
-** TODO Hotbar
+** DONE Hotbar
+- State "DONE"       from "IN-PROGRESS" [2026-02-26 Thu 00:33]
 I probably will have to have two separate shaders
 - One for the "container"
 - One for the blocks
@@ -17,8 +18,12 @@ I probably will have to have two separate shaders
 - State "DONE"       from              [2026-02-18 Wed 22:47]
 **** DONE use hotbar.png and just draw it at the bottom of the screen
 - State "DONE"       from              [2026-02-18 Wed 22:47]
-*** TODO Hotbar selector
-*** TODO mini blocks
+*** DONE Hotbar selector
+- State "DONE"       from "IN-PROGRESS" [2026-02-26 Thu 00:33]
+*** DONE mini blocks
+- State "DONE"       from              [2026-02-26 Thu 00:33]
+**** DONE 3d items shader
+- State "DONE"       from              [2026-02-26 Thu 00:33]
 
 ** TODO Shifting
 ** TODO Sprinting

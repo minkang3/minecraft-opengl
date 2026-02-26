@@ -24,6 +24,7 @@ struct Renderer
 	ShaderID shaderID          = SHADER_ID_UNINIT;
 	ShaderID crosshairShaderID = SHADER_ID_UNINIT;
 	ShaderID hotbarShaderID    = SHADER_ID_UNINIT;
+	ShaderID item3dShaderID    = SHADER_ID_UNINIT;
 
 	unsigned int blockVAO;
 	unsigned int wireVAO;
@@ -63,4 +64,8 @@ namespace Render
 	void init_hotbar_selector_texture(Renderer &render, std::string file_path);
 	void draw_hotbar(Renderer &render);
 	void draw_hotbar_selector(Renderer &render, unsigned int slot);
+
+	// Items
+	void init_3d_hotbar_item(Renderer &render);
+	void draw_3d_hotbar_item(Renderer &render, BlockID block_id, unsigned int slot);
 }

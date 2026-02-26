@@ -5,6 +5,7 @@
 
 #include <camera.hpp>
 #include <world.hpp>
+#include <inventory.hpp>
 
 #define WINDOW_WIDTH  (800)
 #define WINDOW_HEIGHT (600)
@@ -22,5 +23,5 @@ namespace Window
 	int init(WindowData &window);
 	void framebuffer_size_cb(GLFWwindow *window, int width, int height);
 	void mouse_cb(GLFWwindow *window, double x, double y);
-	void process_input(GLFWwindow *window, CameraData &camera, WorldData &world);
+	void process_input(GLFWwindow *window, CameraData &camera, WorldData &world, InventoryData &inventory);
 }

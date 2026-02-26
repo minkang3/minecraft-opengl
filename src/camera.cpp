@@ -161,7 +161,7 @@ namespace Camera
 		// std::cout << "z: " << camera.pos.z << std::endl;
 	}
 
-	void place_block(CameraData &camera, WorldData &world)
+	void place_block(CameraData &camera, WorldData &world, BlockID &block_id)
 	{
 		RayFace rayface = Collision::draw_ray_through_world(camera.pos, camera.dir, world, camera.range);
 
@@ -186,7 +186,7 @@ namespace Camera
 			break;
 		}
 
-		World::at(world, new_coords.x, new_coords.y, new_coords.z) = camera.selected_block;
+		World::at(world, new_coords.x, new_coords.y, new_coords.z) = block_id;
 	}
 
 	void break_block(CameraData &camera, WorldData &world)
