@@ -1,7 +1,10 @@
 #pragma once
 
+#ifdef __EMSCRIPTEN__
+#include <GLES3/gl3.h>
+#else
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#endif
 
 #include <window.hpp>
 #include <camera.hpp>
@@ -12,8 +15,8 @@ struct EngineState
 	CameraData *camera;
 	Renderer *render;
 
-	float timestamp_prev;
-	float timestamp_delta;
+	float timestamp_prev = 0.0f;
+	float timestamp_delta = 0.0f;
 };
 
 namespace Engine

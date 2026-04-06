@@ -20,9 +20,9 @@ float wire_verticies[] = {
 	// top back
 	-0.5f, 0.5f, -0.5f,
 	0.5f, 0.5f, -0.5f,
-	0.5f, 0.5f, -0.5 + LINE_THICKNESS,
-	0.5f, 0.5f, -0.5 + LINE_THICKNESS,
-	-0.5f, 0.5f, -0.5 + LINE_THICKNESS,
+	0.5f, 0.5f, -0.5f + LINE_THICKNESS,
+	0.5f, 0.5f, -0.5f + LINE_THICKNESS,
+	-0.5f, 0.5f, -0.5f + LINE_THICKNESS,
 	-0.5f, 0.5f, -0.5f,
 
 	// top right

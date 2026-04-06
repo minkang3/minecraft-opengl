@@ -8,6 +8,22 @@
 #include <sstream>
 #include <iostream>
 
+#ifdef __EMSCRIPTEN__
+static std::string adapt_glsl_for_web(const std::string &src)
+{
+	// Emscripten/WebGL2 expects GLSL ES 3.0.
+	// Most of this project uses desktop GLSL 330.
+	std::string out = src;
+	// replace version line
+	{
+		size_t pos = out.find("#version 330 core");
+		if (pos != std::string::npos) out.replace(pos, std::string("#version 330 core").size(), "#version 300 es\nprecision mediump float;");
+	}
+	// gl_FragColor isn't used, so no further changes.
+	return out;
+}
+#endif
+
 namespace Shader
 {
     int init(ShaderID &shaderID, std::string vertex_path, std::string fragment_path)
@@ -41,6 +57,10 @@ namespace Shader
             std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
 			return -1;
         }
+#ifdef __EMSCRIPTEN__
+        vertexCode = adapt_glsl_for_web(vertexCode);
+        fragmentCode = adapt_glsl_for_web(fragmentCode);
+#endif
         const char* vShaderCode = vertexCode.c_str();
         const char * fShaderCode = fragmentCode.c_str();
         // 2. compile shaders
@@ -149,27 +169,34 @@ namespace Shader
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-	void checkCompileErrors(GLuint shader, std::string type)
-    {
-        GLint success;
-        GLchar infoLog[1024];
-        if (type != "PROGRAM")
-        {
-            glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-            if (!success)
-            {
-                glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
-            }
-        }
-        else
-        {
-            glGetProgramiv(shader, GL_LINK_STATUS, &success);
-            if (!success)
-            {
-                glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
-            }
-        }
-    }
-}
+	    void checkCompileErrors(GLuint shader, std::string type)
+	    {
+	        GLint success;
+	        GLchar infoLog[1024];
+	        if (type != "PROGRAM")
+	        {
+	            glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+	            if (!success)
+	            {
+	                glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+	                std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+	            }
+	        }
+	        else
+	        {
+	            glGetProgramiv(shader, GL_LINK_STATUS, &success);
+	            if (!success)
+	            {
+	                glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+	                std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+	            }
+	        }
+	
+	#ifdef __EMSCRIPTEN__
+	        if (!success) {
+	            // Useful for seeing the translated shader sources in browser console.
+	            std::cout << "(emscripten) shader/program failed: " << type << std::endl;
+	        }
+	#endif
+	    }
+	}
