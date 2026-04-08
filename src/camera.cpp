@@ -40,8 +40,8 @@ namespace Camera
 
 	void move_cam(CameraData &camera, double dx, double dy)
 	{
-		camera.yaw += (float) dx * 0.01f; // TODO: make 0.01f a sensitivity variale
-		camera.pitch -= (float) dy * 0.01f;
+		camera.yaw += (float) dx * 0.05f; // TODO: make 0.01f a sensitivity variale
+		camera.pitch -= (float) dy * 0.05f;
 
 		if (camera.pitch > 89.0f)
 			camera.pitch = 89.0f;
